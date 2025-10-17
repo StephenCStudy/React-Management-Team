@@ -1,0 +1,100 @@
+.modal-create-edit {
+  .ant-modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 8px 20px rgba(16, 24, 40, 0.08);
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    background: #fff;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0;
+    padding: 16px 24px;
+  }
+
+  .modal-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .ant-modal-body {
+    background-color: #fff;
+    padding: 20px 24px;
+  }
+
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    label {
+      font-weight: 500;
+      color: #212529;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+      &:focus {
+        border-color: #1677ff;
+        box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+      }
+    }
+
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+
+    .error-text {
+      color: #dc3545;
+      font-size: 12px;
+      margin-top: -4px;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    // background-color: #f9fafb;
+    border-radius: 0 0 8px 8px;
+
+    .btn-cancel,
+    .btn-save {
+      padding: 6px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-cancel {
+      background-color: #f0f0f0;
+      color: #333;
+      &:hover {
+        background-color: #e2e2e2;
+      }
+    }
+
+    .btn-save {
+      background-color: #1677ff;
+      color: #fff;
+      &:hover {
+        background-color: #0b63d1;
+      }
+    }
+  }
+}

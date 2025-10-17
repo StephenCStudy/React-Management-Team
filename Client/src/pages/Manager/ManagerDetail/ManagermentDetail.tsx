@@ -1,5 +1,5 @@
-import React from "react";
-import "./ManagermentDetail.scss";
+
+// import "./ManagermentDetail.scss";
 
 export default function ManagermentDetail() {
   return (

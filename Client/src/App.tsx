@@ -1,10 +1,10 @@
 
-import ManagermentProject from "./pages/Manager/ManagerProject/ManagermentProject";
+import RouterSetup from "./routes/RouterSetup";
 
 export default function App() {
   return (
     <div>
-      <ManagermentProject></ManagermentProject>
+      <RouterSetup/>
     </div>
   )
 }

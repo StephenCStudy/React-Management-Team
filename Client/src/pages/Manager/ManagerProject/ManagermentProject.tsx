@@ -1,7 +1,14 @@
 import { Table, Button } from "antd";
 import "./ManagermentProject.scss";
+import { useState } from "react";
+import ModalCreateEdit from "./Modal/ModalCreateEdit";
+import ModalDelete from "./Modal/ModalDelete";
+import { useNavigate } from "react-router-dom";
 
 export default function ManagermentProject() {
+  const [openModal, setOpenModal] = useState(false);
+  const [openDelete, setOpenDeletel] = useState(false);
+  const navigate = useNavigate()
   const dataSource = [
     { key: "1", id: 1, name: "Xây dựng website thương mại điện tử" },
     { key: "2", id: 2, name: "Phát triển ứng dụng di động" },
@@ -14,7 +21,7 @@ export default function ManagermentProject() {
     { key: "9", id: 9, name: "Quản lý dữ liệu khách hàng" },
   ];
 
-  const columns = [
+  const columns: any = [
     {
       title: "ID",
       dataIndex: "id",
@@ -31,11 +38,11 @@ export default function ManagermentProject() {
       title: "Hành Động",
       key: "action",
       align: "center",
-      render: (_, record) => (
+      render: (_: any, record: any) => (
         <div className="action-buttons">
-          <Button className="btn-edit">Sửa</Button>
-          <Button className="btn-delete">Xóa</Button>
-          <Button className="btn-detail">Chi tiết</Button>
+          <Button className="btn-edit" onClick={() => setOpenModal(true)}>Sửa</Button>
+          <Button className="btn-delete" onClick={() => setOpenDeletel(true)}>Xóa</Button>
+          <Button className="btn-detail" onClick={()=>navigate("/Manager/Detail")}>Chi tiết</Button>
         </div>
       ),
     },
@@ -43,19 +50,34 @@ export default function ManagermentProject() {
 
   return (
     <div className="Manager-container">
-      <h1 className="Manager-title">Quản lý dự án</h1>
+      <h1 className="Manager-title">Quản lý dự án nhóm</h1>
 
       <div className="Manager-setting">
-        <Button className="Manager-create">+ Thêm dự án</Button>
+        <Button className="Manager-create" onClick={() => setOpenModal(true)}>
+          + Thêm dự án
+        </Button>
         <input className="Manager-search" placeholder="Tìm kiếm..." />
       </div>
 
-      <p className="title-table">Danh sách dự án</p>
+      <p className="title-table">Danh Sách Dự Án</p>
       <Table
         dataSource={dataSource}
         columns={columns}
         pagination={{ pageSize: 9 }}
         bordered
+      />
+
+      <ModalCreateEdit
+  open={openModal}
+  onCancel={() => setOpenModal(false)}
+  onOk={() => setOpenModal(false)}
+/>
+
+
+       <ModalDelete
+        open={openDelete}
+        onCancel={() => setOpenDeletel(false)}
+        // onDelete={handleDelete}
       />
     </div>
   );

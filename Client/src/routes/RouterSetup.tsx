@@ -1,11 +1,21 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from "react-router-dom";
+import Login from "../pages/authentication/Login/Login";
+import Register from "../pages/authentication/register/register";
+import HeaderManagerment from "../components/header/HeaderManagerment";
+import ManagermentDetail from "../pages/Manager/ManagerDetail/ManagermentDetail";
+import ManagermentProject from "../pages/Manager/ManagerProject/ManagermentProject";
 
 export default function RouterSetup() {
   return (
     <div>
       <Routes>
-        <Route path='/' element={<></>}></Route>
+        <Route path="/Login" element={<Login />}></Route>
+        <Route path="/Register" element={<Register />}></Route>
+        <Route path="/Manager" element={<HeaderManagerment />}>
+          <Route path="Detail" element={<ManagermentDetail />} />
+          <Route path="Project" element={<ManagermentProject />} />
+        </Route>
       </Routes>
     </div>
-  )
+  );
 }

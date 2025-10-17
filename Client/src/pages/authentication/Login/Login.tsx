@@ -2,12 +2,14 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { FormData } from "../../../interfaces/auth/Login/formDataLogin";
 import "./Login.scss";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState<Partial<FormData>>({});
 
@@ -81,9 +83,13 @@ export default function Login() {
 
         <p className="login-link">
           Chưa có tài khoản?{" "}
-          <a href="/register" className="link">
+          <span
+            onClick={() => navigate("/register")}
+            className="link"
+            style={{ cursor: "pointer" }}
+          >
             Đăng ký
-          </a>
+          </span>
         </p>
       </form>
     </div>

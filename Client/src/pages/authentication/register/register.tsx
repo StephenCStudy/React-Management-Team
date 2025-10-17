@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { FormData } from "../../../interfaces/auth/register/fomDataRegis";
 import "./register.scss";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [formData, setFormData] = useState<FormData>({
@@ -10,6 +11,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState<Partial<FormData>>({});
 
@@ -128,9 +130,13 @@ export default function Register() {
 
           <p className="login-link">
             Đã có tài khoản?{" "}
-            <a href="/login" className="link">
-              Đăng nhập
-            </a>
+            <span
+          className="link"
+          onClick={() => navigate("/login")}
+          style={{ cursor: "pointer" }}
+        >
+          Đăng nhập
+        </span>
           </p>
         </form>
       </div>

@@ -1,45 +1,90 @@
 .Manager-container {
+  width: 1296px; // giống Figma
+  min-height: 679px; // chiều cao khung nội dung
+  background-color: #fff; // nền trắng
+  border: 1px solid #0000002d; // viền đen nhạt (khoảng 17–20% opacity)
+  border-radius: 6px; // bo nhẹ
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.075); // đổ bóng nhẹ
   padding: 24px;
-  background: #fff;
+  margin: 40px auto; // căn giữa trong trang
 }
 
 .Manager-title {
-  font-size: 28px;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 20px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500; // Medium
+  font-size: 23.6px; // chuẩn theo Figma
+  line-height: 28.9px;
+  color: #212529; // màu chữ
+  margin-bottom: 24px;
+  letter-spacing: 0; // giữ spacing mặc định
 }
 
 .Manager-setting {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .Manager-create {
-  background-color: #1677ff;
-  color: white;
-  border: none;
-  padding: 6px 16px;
+  width: 150px;
+  height: 38px;
+  background-color: #0d6efd;
+  color: #ffffff;
+  border: 1px solid #0d6efd;
   border-radius: 6px;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
   cursor: pointer;
-}
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; // tạo khoảng cách giữa icon "+" và text
+  margin-top: 8px;
 
-.Manager-create:hover {
-  opacity: 0.9;
+  &:hover {
+    background-color: #0b5ed7; // xanh đậm hơn khi hover
+  }
+
+  &:active {
+    background-color: #0a58ca; // nhấn giữ
+  }
 }
 
 .Manager-search {
-  border: 1px solid #d9d9d9;
+  width: 433px;
+  height: 38px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
   border-radius: 6px;
-  padding: 6px 12px;
-  width: 200px;
+  padding: 6px 12px; // khoảng cách chữ với viền
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  color: #212529;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &::placeholder {
+    color: #6c757d; // màu placeholder xám nhạt như Figma
+  }
+
+  &:focus {
+    border-color: #0d6efd; // viền xanh khi focus
+    box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.25);
+  }
 }
 
 .title-table {
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;         // Medium
+  font-size: 19.77px;       // chuẩn Figma
+  line-height: 24px;
+  color: #212529;           // màu chữ
+  margin-top: 16px;
+  margin-bottom: 12px;
 }
 
 .action-buttons {
@@ -56,13 +101,13 @@
 
 .btn-delete {
   background-color: #ff4d4f;
-  color: white;
+  color: #fff;
   border: none;
 }
 
 .btn-detail {
   background-color: #1677ff;
-  color: white;
+  color: #fff;
   border: none;
 }
 
@@ -72,30 +117,14 @@
   opacity: 0.85;
 }
 
-.ant-table-thead > tr > th {
+/* Header table */
+.ant-table-thead>tr>th {
   background: #000 !important;
   color: #fff !important;
   text-align: center;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///pagination
-/* === Pagination style giống hình === */
+/* Pagination */
 .ant-pagination {
   display: flex;
   justify-content: center;
@@ -103,30 +132,30 @@
 }
 
 .ant-pagination-item {
-  border: 1px solid #e5e7eb !important; /* viền xám nhạt */
+  border: 1px solid #e5e7eb !important;
   border-radius: 6px !important;
-  background: white !important;
+  background: #fff !important;
 }
 
 .ant-pagination-item a {
-  color: #1677ff !important; /* số xanh dương */
+  color: #1677ff !important;
   font-weight: 500;
 }
 
 .ant-pagination-item-active {
-  background-color: #1677ff !important; /* ô được chọn xanh */
+  background-color: #1677ff !important;
   border-color: #1677ff !important;
 }
 
 .ant-pagination-item-active a {
-  color: white !important;
+  color: #fff !important;
 }
 
 .ant-pagination-prev,
 .ant-pagination-next {
   border: 1px solid #e5e7eb !important;
   border-radius: 6px !important;
-  background: white !important;
+  background: #fff !important;
 }
 
 .ant-pagination-prev button,
@@ -137,5 +166,5 @@
 .ant-pagination-prev:hover button,
 .ant-pagination-next:hover button,
 .ant-pagination-item:hover a {
-  color: #005ad9 !important; /* xanh đậm khi hover */
+  color: #005ad9 !important;
 }

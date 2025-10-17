@@ -1,5 +1,3 @@
-
-
 // .register-title {
 //     width: 636px;
 //     height: 62px;
@@ -18,25 +16,26 @@
 .register-container {
   width: 1600px;
   height: 965px;
-//   background-color: #f8fafc;
-color: #F8FAFC;
+  //   background-color: #f8fafc;
+  color: #F8FAFC;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 40px;
-  margin-left: 120px;
+  margin-left: 240px;
+
 
 
   .register-title {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-size: 52px;
-  line-height: 62px;
-  letter-spacing: -2px;
-  text-align: center;
-  color: rgba(9, 9, 20, 1);
-}
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 52px;
+    line-height: 62px;
+    letter-spacing: -2px;
+    text-align: center;
+    color: rgba(9, 9, 20, 1);
+  }
 
   .register-form {
     width: 533px;
@@ -71,10 +70,12 @@ color: #F8FAFC;
         font-size: 16px;
         color: rgba(82, 82, 91, 1);
       }
-      .error-text{
+
+      .error-text {
         color: red;
         font-size: 12px;
-        margin-bottom: 15px;
+        margin-top: 20px;
+        margin-left: -10px;
       }
     }
 
