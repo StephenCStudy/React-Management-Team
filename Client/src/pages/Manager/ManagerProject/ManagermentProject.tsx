@@ -1,9 +1,11 @@
 import { Table, Button } from "antd";
 import "./ManagermentProject.scss";
 import { useState } from "react";
-import ModalCreateEdit from "./Modal/ModalCreateEdit";
-import ModalDelete from "./Modal/ModalDelete";
+// import ModalCreateEdit from "./Modal/ModalCreateEdit";
+// import ModalDelete from "./Modal/ModalDelete";
 import { useNavigate } from "react-router-dom";
+import ModalCreateEdit from "./Modal/Edit/ModalCreateEdit";
+import ModalDelete from "./Modal/Delete/ModalDelete";
 
 export default function ManagermentProject() {
   const [openModal, setOpenModal] = useState(false);

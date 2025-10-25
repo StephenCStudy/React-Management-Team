@@ -1,0 +1,39 @@
+/* ViewMemberModal.scss */
+
+.view-member-modal {
+  // Tùy chỉnh tiêu đề
+  .ant-modal-title {
+    font-weight: 600;
+  }
+
+  // Tùy chỉnh danh sách
+  .ant-list-item {
+    // Căn giữa Select (action) với nội dung
+    .ant-list-item-action {
+      margin-left: 16px;
+      align-self: center; // Quan trọng: căn giữa theo chiều dọc
+    }
+
+    .ant-list-item-meta {
+      align-items: center; // Căn avatar và text
+    }
+
+    .ant-list-item-meta-title {
+      font-weight: 500;
+      margin-bottom: 2px !important;
+    }
+
+    .ant-list-item-meta-description {
+      font-size: 13px;
+      color: #6b7280; // Màu xám nhạt
+    }
+  }
+
+  // Tùy chỉnh Select để giống trong Figma (không có viền)
+  .ant-select-borderless {
+    .ant-select-selector {
+      font-weight: 500;
+      color: #1f2937;
+    }
+  }
+}

@@ -1,135 +1,57 @@
-import React, { useState, useMemo } from "react";
-import { Table, Button, message, ConfigProvider } from "antd";
-import { DownOutlined, RightOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { Button, ConfigProvider, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import "./ManagermentDetail.scss";
-import ModalCreateEdit from "./Modal/Edit/ModalCreateEdit";
-import ModalDelete from "./Modal/Delete/ModalDelete";
-import InitMemberModal from "./Modal/initMember/initmember";
-import ViewMemberModal from "./Modal/viewMember/viewmember";
+import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import type { Task } from "../../../interfaces/manager/mamagerDetail/managerDetail";
 
-
-// ==== Helper: lấy 2 ký tự đầu tên ====
-const getInitials = (name: string): string => {
-  if (!name) return "?";
-  const parts = name.trim().split(" ");
-  const first = parts[0] ? parts[0][0] : "";
-  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
-  if (parts.length === 1 && parts[0].length > 1) {
-    return parts[0].substring(0, 2).toUpperCase();
-  }
-  return (first + last).toUpperCase();
-};
-
-const taskData: Task[] = [
-  {
-    id: 1,
-    taskName: "Soạn thảo đề cương dự án",
-    assigneeId: 1,
-    projectId: 101,
-    assignDate: "2025-02-24",
-    dueDate: "2025-02-27",
-    priority: "Thấp",
-    progress: "Đúng tiến độ",
-    status: "To do",
-  },
-  {
-    id: 2,
-    taskName: "Soạn thảo báo cáo",
-    assigneeId: 1,
-    projectId: 101,
-    assignDate: "2025-02-24",
-    dueDate: "2025-02-27",
-    priority: "Trung bình",
-    progress: "Có rủi ro",
-    status: "To do",
-  },
-  {
-    id: 3,
-    taskName: "Lên lịch họp kickoff",
-    assigneeId: 1,
-    projectId: 101,
-    assignDate: "2025-02-24",
-    dueDate: "2025-02-27",
-    priority: "Cao",
-    progress: "Trễ hạn",
-    status: "In progress",
-  },
-  {
-    id: 4,
-    taskName: "Phân tích yêu cầu hệ thống",
-    assigneeId: 2,
-    projectId: 101,
-    assignDate: "2025-02-10",
-    dueDate: "2025-02-15",
-    priority: "Thấp",
-    progress: "Đúng tiến độ",
-    status: "Pending",
-  },
-  {
-    id: 5,
-    taskName: "Phân tích yêu cầu hệ thống",
-    assigneeId: 2,
-    projectId: 101,
-    assignDate: "2025-02-10",
-    dueDate: "2025-02-15",
-    priority: "Thấp",
-    progress: "Đúng tiến độ",
-    status: "Done",
-  },
-];
-
-const ManagermentDetail: React.FC = () => {
-  const [openCategories, setOpenCategories] = useState<string[]>(["To do"]);
-  const [openCreateEdit, setOpenCreateEdit] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-  const [openInitMember, setOpenInitMember] = useState(false);
-  const [openViewMember, setOpenViewMember] = useState(false);
-
-  // --- Dữ liệu thành viên gốc ---
-  const [projectMembers, setProjectMembers] = useState([
-    {
-      user: { id: 1, fullName: "An Nguyễn", email: "an@example.com" },
-      role: "Project Owner",
-    },
-    {
-      user: { id: 2, fullName: "Bách Nguyễn", email: "bach@example.com" },
-      role: "Frontend Developer",
-    },
-  ]);
-
-  // --- Biến đổi dữ liệu đúng format modal cần ---
-  const membersForModal = useMemo(() => {
-    return projectMembers.map((pm) => ({
-      id: pm.user.id,
-      name: pm.user.fullName,
-      email: pm.user.email,
-      avatarLabel: getInitials(pm.user.fullName),
-      role: pm.role,
-    }));
-  }, [projectMembers]);
-
-  // --- Lưu lại thay đổi vai trò từ modal ---
-  const handleSaveRoles = (updatedMembers: any[]) => {
-    setProjectMembers((prevMembers) =>
-      prevMembers.map((pm) => {
-        const updated = updatedMembers.find((m) => m.id === pm.user.id);
-        if (updated) {
-          return { ...pm, role: updated.role };
-        }
-        return pm;
-      })
-    );
-    message.success("Cập nhật vai trò thành công!");
-    setOpenViewMember(false);
+interface ProjectMember {
+  user: {
+    id: number;
+    fullName: string;
   };
+  role: string;
+}
 
+export default function UserProject() {
+  // === STATE ===
+  const [openCategories, setOpenCategories] = useState<string[]>([]);
+  // const [openDelete, setOpenDelete] = useState(false);
+  // const [openCreateEdit, setOpenCreateEdit] = useState(false);
+  // const [openInitMember, setOpenInitMember] = useState(false);
+  // const [openViewMember, setOpenViewMember] = useState(false);
+  // const [editingTask, setEditingTask] = useState<Task | null>(null);
+  // const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
+  // === DỮ LIỆU GIẢ LẬP ===
+  const projectMembers: ProjectMember[] = [
+    { user: { id: 1, fullName: "Nguyễn Văn A" }, role: "Frontend Developer" },
+    { user: { id: 2, fullName: "Trần Thị B" }, role: "Backend Developer" },
+  ];
 
-  // Chuyển đổi trạng thái mở/đóng của từng nhóm
+  const taskData: Task[] = [
+    {
+      key: "1",
+      taskName: "Thiết kế giao diện",
+      assigneeId: 1,
+      priority: "Cao",
+      assignDate: "2025-10-10",
+      dueDate: "2025-10-25",
+      progress: "Đang thực hiện",
+      status: "To Do",
+    },
+    {
+      key: "2",
+      taskName: "Xây dựng API",
+      assigneeId: 2,
+      priority: "Trung bình",
+      assignDate: "2025-10-12",
+      dueDate: "2025-10-28",
+      progress: "Chưa bắt đầu",
+      status: "In Progress",
+    },
+  ];
+
+  // === HÀM XỬ LÝ ===
   const toggleCategory = (category: string) => {
     setOpenCategories((prev) =>
       prev.includes(category)
@@ -138,9 +60,14 @@ const ManagermentDetail: React.FC = () => {
     );
   };
 
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase();
 
-  //table columns
-
+  // === TABLE COLUMNS ===
   const columns: ColumnsType<any> = [
     {
       title: "Tên Nhiệm Vụ",
@@ -169,8 +96,7 @@ const ManagermentDetail: React.FC = () => {
       render: (priority, record) => {
         if (record.categoryHeader) return null;
         const safeClass = priority.toLowerCase().replace(/\s/g, "-");
-        const className = `priority ${safeClass}`;
-        return <span className={className}>{priority}</span>;
+        return <span className={`priority ${safeClass}`}>{priority}</span>;
       },
     },
     {
@@ -198,8 +124,7 @@ const ManagermentDetail: React.FC = () => {
       render: (progress, record) => {
         if (record.categoryHeader) return null;
         const safeClass = progress.toLowerCase().replace(/\s/g, "-");
-        const className = `status ${safeClass}`;
-        return <span className={className}>{progress}</span>;
+        return <span className={`status ${safeClass}`}>{progress}</span>;
       },
     },
     {
@@ -231,14 +156,13 @@ const ManagermentDetail: React.FC = () => {
     },
   ];
 
-  // Nhóm dữ liệu theo trạng thái
+  // === GROUP TASKS ===
   const groupedData: Record<string, Task[]> = taskData.reduce((acc, task) => {
     if (!acc[task.status]) acc[task.status] = [];
     acc[task.status].push(task);
     return acc;
   }, {} as Record<string, Task[]>);
 
-  // Tạo dữ liệu mở rộng với header cho từng nhóm
   const expandedData = Object.entries(groupedData).flatMap(
     ([status, tasks]) => {
       const isOpen = openCategories.includes(status);
@@ -263,22 +187,24 @@ const ManagermentDetail: React.FC = () => {
     }
   );
 
+  function setOpenInitMember(arg0: boolean): void {
+    throw new Error("Function not implemented.");
+  }
+
+  // === RETURN JSX ===
   return (
-    <ConfigProvider
-      getPopupContainer={() => document.body} // ✅ fix dropdown layout
-    >
+    <ConfigProvider getPopupContainer={() => document.body}>
       <div className="managerDetail-container">
         <div className="tool-setting">
-
-          {/* // --- Title Section --- */}
           <div className="title-section">
             <div className="title-box">
               <p className="title">Xây dựng website thương mại điện tử</p>
             </div>
+
             <div className="imgs">
               <div className="img">
                 <img
-                  src="https://thvnext.bing.com/th/id/OIP.6mIEhub14VrCFHQBNU-0XwHaE7?w=229&h=180&c=7&r=0&o=7&cb=12&dpr=1.3&pid=1.7&rm=3"
+                  src="https://thvnext.bing.com/th/id/OIP.6mIEhub14VrCFHQBNU-0XwHaE7?w=229&h=180&c=7&r=0&o=7"
                   alt="project"
                   className="project-img"
                 />
@@ -288,6 +214,7 @@ const ManagermentDetail: React.FC = () => {
                 năng như giỏ hàng, thanh toán và quản lý sản phẩm.
               </p>
             </div>
+
             <button
               className="btn-create-project"
               onClick={() => {
@@ -299,7 +226,7 @@ const ManagermentDetail: React.FC = () => {
             </button>
           </div>
 
-          {/* // --- Member Section --- */}
+          {/* --- Member Section --- */}
           <div className="member">
             <div className="member-head">
               <p className="member-title">Thành viên</p>
@@ -321,9 +248,10 @@ const ManagermentDetail: React.FC = () => {
                   </div>
                 </div>
               ))}
+
               <div
                 className="body-icon"
-                onClick={() => setOpenViewMember(true)}
+                onClick={() => setOpenInitMember(true)}
               >
                 <i className="fa-solid fa-ellipsis-h"></i>
               </div>
@@ -331,7 +259,7 @@ const ManagermentDetail: React.FC = () => {
 
             <div className="member-tool">
               <select>
-                <option defaultValue="">Sắp xếp theo</option>
+                <option value="">Sắp xếp theo</option>
               </select>
               <input type="text" placeholder="Tìm kiếm nhiệm vụ" />
             </div>
@@ -351,50 +279,23 @@ const ManagermentDetail: React.FC = () => {
             bordered
           />
         </div>
-
-        {/* --- MODALS --- */}
-        <ModalCreateEdit
-          open={openCreateEdit}
-          onCancel={() => setOpenCreateEdit(false)}
-          onOk={(data) => {
-            if (editingTask) {
-              console.log("Cập nhật:", { ...editingTask, ...data });
-            } else {
-              console.log("Tạo mới:", data);
-            }
-            setOpenCreateEdit(false);
-          }}
-        />
-
-        <ModalDelete
-          open={openDelete}
-          onCancel={() => setOpenDelete(false)}
-          onConfirm={() => {
-            if (taskToDelete) {
-              message.success("Đã xóa nhiệm vụ thành công!");
-            }
-            setOpenDelete(false);
-          }}
-        />
-
-        <InitMemberModal
-          isOpen={openInitMember}
-          onClose={() => setOpenInitMember(false)}
-          onSave={(values) => {
-            console.log("Thêm thành viên:", values);
-            setOpenInitMember(false);
-          }}
-        />
-
-        <ViewMemberModal
-          isOpen={openViewMember}
-          onClose={() => setOpenViewMember(false)}
-          onSave={handleSaveRoles}
-          members={membersForModal}
-        />
       </div>
     </ConfigProvider>
   );
-};
+}
+function setEditingTask(record: any) {
+  throw new Error("Function not implemented.");
+}
 
-export default ManagermentDetail;
+function setOpenCreateEdit(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+
+function setTaskToDelete(record: any) {
+  throw new Error("Function not implemented.");
+}
+
+function setOpenDelete(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+

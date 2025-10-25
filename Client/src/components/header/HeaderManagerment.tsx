@@ -1,17 +1,22 @@
-
 import { Outlet, useNavigate } from "react-router-dom";
 import "./Header.scss";
+import { useAppDispatch } from "../../apis/store/hooks";
+import { logout } from "../../apis/store/slice/auth/login.slice";
 
 export default function HeaderManagerment() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    // Xoá token, dữ liệu đăng nhập nếu có
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userInfo");
+    // Dispatch action logout để xóa token trong Redux store
+    dispatch(logout());
 
     // Chuyển hướng về trang đăng nhập
     navigate("/login");
+  };
+
+  const goToProjects = () => {
+    navigate("/Manager/Project");
   };
 
   return (
@@ -20,9 +25,16 @@ export default function HeaderManagerment() {
         <div className="Header-container">
           <h1 className="Header-title">Quản Lý Dự Án</h1>
           <nav className="Header-nav">
-            <p className="nav-item">Dự Án</p>
-            <p className="nav-item">Nhiệm vụ của tôi</p>
-            <p className="nav-item" onClick={handleLogout}> Đăng xuất</p>
+            <p className="nav-item" onClick={goToProjects}>
+              Dự Án
+            </p>
+            <p className="nav-item" onClick={() => navigate("/Manager/User")}>
+              Nhiệm vụ của tôi
+            </p>
+            <p className="nav-item" onClick={handleLogout}>
+              {" "}
+              Đăng xuất
+            </p>
           </nav>
         </div>
       </header>

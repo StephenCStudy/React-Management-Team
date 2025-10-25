@@ -1,0 +1,23 @@
+/* InitMemberModal.scss */
+
+.init-member-modal {
+  // Class bọc ngoài của Modal
+
+  // Tùy chỉnh tiêu đề
+  .ant-modal-title {
+    font-weight: 600;
+  }
+
+  // Tùy chỉnh phần thân modal
+  .ant-modal-body {
+    // Ví dụ: thay đổi khoảng cách
+    .ant-form-item {
+      margin-bottom: 16px;
+    }
+  }
+
+//   // Tùy chỉnh footer
+//   .ant-modal-footer {
+//     //...
+//   }
+}

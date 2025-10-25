@@ -1,216 +1,313 @@
 .managerDetail-container {
-    background-color: #fff;
-    padding: 20px 40px;
+  background-color: #fff;
+  padding: 20px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-    .tool-setting {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        border-bottom: 1px solid #e5e5e5;
-        padding-bottom: 20px;
+  /* ==== TOOL SETTING ==== */
+  .tool-setting {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+  }
+
+  /* ==== TITLE & IMAGE SECTION ==== */
+  .title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    .title-box {
+      width: 600px;
+
+      .title {
+        font-size: 23px;
+        font-weight: 500;
+        color: #212529;
+        margin-bottom: 10px;
+      }
     }
 
-    .title-section {
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
+    .imgs {
+      display: flex;
+      align-items: center;
+      gap: 10px;
 
-        .title-box {
-            width: 600px;
+      .project-img {
+        width: 218px;
+        height: 163px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
 
-            .title {
-                font-size: 23px;
-                font-weight: 500;
-                color: #212529;
-                margin-bottom: 10px;
-            }
-
-
-        }
-
-        .imgs {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            .project-img {
-                width: 218px;
-                height: 163px;
-                object-fit: cover;
-                border-radius: 6px;
-            }
-
-            .subtitle-img {
-                font-size: 16px;
-                color: #333;
-                line-height: 1.5;
-                width: 400px;
-            }
-
-        }
-
-        .btn-create-project {
-            background-color: #0d6ef9;
-            color: #fff;
-            font-weight: 500;
-            border: 1px solid #0d6ef9;
-            border-radius: 6px;
-            height: 38px;
-            width: 155px;
-            cursor: pointer;
-        }
+      .subtitle-img {
+        font-size: 16px;
+        color: #333;
+        line-height: 1.5;
+        width: 400px;
+        margin-bottom: 120px;
+      }
     }
 
-    .member {
-        margin-left: 30px;
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
+    .btn-create-project {
+      background-color: #0d6ef9;
+      color: #fff;
+      font-weight: 500;
+      border: 1px solid #0d6ef9;
+      border-radius: 6px;
+      height: 38px;
+      width: 155px;
+      cursor: pointer;
+    }
+  }
 
-        .member-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+  /* ==== MEMBER SECTION ==== */
+  .member {
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
 
-            .member-title {
-                font-size: 18px;
-                font-weight: 500;
-                color: #000;
-            }
+    .member-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-            .btn-create-member {
-                background-color: transparent;
-                color: #0d6ef9;
-                border: 1px solid #0d6ef9;
-                border-radius: 6px;
-                height: 32px;
-                padding: 0 12px;
-                cursor: pointer;
-            }
-        }
+      .member-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #000;
+      }
 
-        .member-body {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-top: 15px;
-
-            .img-user {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-
-                .avatar {
-                    background-color: #0d6ef9;
-                    color: #fff;
-                    border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    font-weight: 600;
-
-                    &.purple {
-                        background-color: #ba68c8;
-                    }
-                }
-
-                .info {
-                    .name {
-                        font-weight: 600;
-                        font-size: 14px;
-                    }
-
-                    .role {
-                        font-size: 12px;
-                        color: #555;
-                    }
-                }
-            }
-
-            .body-icon {
-                width: 42px;
-                height: 42px;
-                background-color: #e2e3e5;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 20px;
-                cursor: pointer;
-            }
-        }
-
-        .member-tool {
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px;
-            margin-top: 110px;
-
-            select {
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-                ;
-
-            }
-
-            input {
-                height: 34px;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-                padding: 20px;
-            }
-
-            input {
-                flex: 1;
-            }
-        }
+      .btn-create-member {
+        background-color: transparent;
+        color: #0d6ef9;
+        border: 1px solid #0d6ef9;
+        border-radius: 6px;
+        height: 32px;
+        padding: 0 12px;
+        cursor: pointer;
+      }
     }
 
-    /* ==== Ant Design Table tùy chỉnh ==== */
-    .custom-table {
-        margin-top: 20px;
+    .member-body {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 15px;
 
-        .ant-table {
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
+      .img-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .avatar {
+          background-color: #0d6ef9;
+          color: #fff;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: 600;
+
+          &.purple {
+            background-color: #ba68c8;
+          }
         }
 
-        .ant-table-thead>tr>th {
-            background-color: #f9f9f9;
+        .info {
+          .name {
             font-weight: 600;
-            color: #212529;
-            text-align: center;
-        }
-
-        .ant-table-tbody>tr>td {
-            text-align: center;
-            padding: 10px;
             font-size: 14px;
-        }
+          }
 
-        .priority,
-        .status {
-            border-radius: 4px;
-            padding: 3px 8px;
-            font-weight: 500;
+          .role {
+            font-size: 12px;
+            color: #555;
+          }
         }
+      }
 
-        .btn-edit {
-            background-color: #ffc107;
-            color: #fff;
-            border: none;
-            margin-right: 6px;
-            border-radius: 6px;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-        }
+      .body-icon {
+        width: 42px;
+        height: 42px;
+        background-color: #e2e3e5;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        cursor: pointer;
+      }
     }
+
+    .member-tool {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-top: 110px;
+
+      select,
+      input {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+
+      select {
+        padding: 10px;
+      }
+
+      input {
+        height: 34px;
+        padding: 20px;
+        flex: 1;
+      }
+    }
+  }
+
+  /* ==== TABLE ==== */
+  .custom-table {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow-x: auto; // Cho responsive mà vẫn cố định layout
+
+    .ant-table {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      table-layout: fixed !important; // Cố định cột, không co giãn
+      width: 100%;
+    }
+
+    .ant-table-thead>tr>th {
+      background-color: #f9f9f9;
+      font-weight: 600;
+      color: #212529;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .ant-table-tbody>tr>td {
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 14px;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ant-table-tbody>tr {
+      height: 48px; // Giữ chiều cao ổn định cho mỗi hàng
+    }
+
+    .category-header {
+      background-color: #fafafa !important;
+      font-weight: 700;
+      color: #212529;
+      cursor: pointer;
+
+      td {
+        border-bottom: 1px solid #e0e0e0;
+      }
+    }
+
+    .task-name {
+      font-weight: 500;
+      color: #333;
+      text-align: left;
+    }
+
+    /* === ƯU TIÊN === */
+    .priority {
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 4px 10px;
+      color: #fff;
+      display: inline-block;
+      text-align: center;
+      min-width: 80px;
+      text-transform: capitalize;
+
+      &.thấp {
+        background-color: #0DCAF0; // xanh ngọc
+      }
+
+      &.trung-bình {
+        background-color: #FFA500; // vàng cam
+      }
+
+      &.cao {
+        background-color: #DC3545; // đỏ
+      }
+    }
+
+    /* === TIẾN ĐỘ === */
+    .status {
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 4px 10px;
+      color: #fff;
+      display: inline-block;
+      text-align: center;
+      min-width: 100px;
+      text-transform: capitalize;
+
+      &.đúng-tiến-độ {
+        background-color: #198754; // xanh lá
+      }
+
+      &.có-rủi-ro {
+        background-color: #FFA500; // cam
+      }
+
+      &.trễ-hạn {
+        background-color: #DC3545; // đỏ đậm
+      }
+    }
+
+    /* === STYLE CHUNG CHO CÁC NÚT HÀNH ĐỘNG === */
+    .btn-edit {
+      background-color: #1890ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      margin-right: 6px;
+      transition: 0.3s;
+    }
+
+    .btn-edit:hover {
+      opacity: 0.5;
+    }
+
+    .btn-delete {
+      background-color: #ff4d4f;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .btn-delete:hover {
+      opacity: 0.5;
+    }
+
+
+    /* ==== FIXED TABLE LAYOUT (dropdown không làm dịch chuyển) ==== */
+    .ant-select-dropdown,
+    .ant-dropdown {
+      position: fixed !important;
+      z-index: 9999 !important;
+    }
+
+  }
+
+  .ant-table-cell {
+    div {
+      // font-family: 'Roboto', sans-serif;
+      font-weight: 800;
+    }
+  }
 }

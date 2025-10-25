@@ -24,7 +24,7 @@ const ModalDelete: React.FC<ModalDeleteProps> = ({ open, onCancel, onDelete }) =
         {/* Header 63px */}
         <div className="md-header">
           <h3 className="md-title">Xác nhận xoá</h3>
-          <button className="md-close" aria-label="Close" onClick={onCancel}></button>
+          {/* <button className="md-close" aria-label="Close" onClick={onCancel}></button> */}
         </div>
 
         {/* Content 85px */}
