@@ -1,0 +1,83 @@
+.title-box {
+  width: 600px;
+
+  .title {
+    font-size: 23px;
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 10px;
+  }
+}
+
+.member {
+  margin-left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: -90px;
+}
+
+.member-tools {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+
+  select,
+  input {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  select {
+    padding: 10px;
+  }
+
+  input {
+    height: 34px;
+    padding: 20px;
+    flex: 1;
+  }
+}
+
+.priority.cao {
+  background-color: #DC3545; // đỏ
+}
+
+.priority.trung.bình {
+  background-color: #FFA500; // vàng cam
+}
+
+.priority.thấp {
+  background-color: #0DCAF0; // xanh ngọc
+}
+
+
+.status {
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: #fff;
+  display: inline-block;
+  text-align: center;
+  min-width: 100px;
+  text-transform: capitalize;
+
+   &[class*="đúng tiến độ"] {
+    background-color: #198754; // xanh lá
+  }
+
+  &[class*="có rủi ro"] {
+    background-color: #ffa500; // cam
+  }
+
+  &[class*="trễ hạn"] {
+    background-color: #dc3545; // đỏ đậm
+  }
+
+  &[class*="đang thực hiện"] {
+    background-color: #0d6efd; // xanh dương
+  }
+
+  &[class*="chưa bắt đầu"] {
+    background-color: #6c757d; // xám
+  }
+}
