@@ -16,7 +16,7 @@ export const registerUser = createAsyncThunk(
     try {
       // Kiểm tra email đã tồn tại chưa
       const check = await axios.get(
-        `${import.meta.env.VITE_SV_HOST}/users?email=${data.email}`
+        `http://localhost:3000/users?email=${data.email}`
       );
 
       if (check.data.length > 0) {
@@ -25,7 +25,7 @@ export const registerUser = createAsyncThunk(
 
       // Nếu email chưa có → tạo user mới
       const newUser = await axios.post(
-        `${import.meta.env.VITE_SV_HOST}/users`,
+        `http://localhost:3000/users`,
         {
           ...data,
           isAdmin: false, // mặc định user thường

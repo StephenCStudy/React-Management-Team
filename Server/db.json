@@ -1,22 +1,29 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "fullName": "An Nguyễn",
       "email": "nguyenquangan@gmail.com",
       "password": "123456"
     },
     {
-      "id": 2,
+      "id": "2",
       "fullName": "Linh Trần",
       "email": "tranlinh2000@gmail.com",
       "password": "abcdef"
     },
     {
-      "id": 3,
+      "id": "3",
       "fullName": "Minh Phạm",
       "email": "phamminhdev@gmail.com",
       "password": "qwerty"
+    },
+    {
+      "id": "6ec6",
+      "displayName": "Trần Đức Anh",
+      "email": "tranducanh31032006@gmail.com",
+      "password": "12345678",
+      "isAdmin": false
     }
   ]
 }

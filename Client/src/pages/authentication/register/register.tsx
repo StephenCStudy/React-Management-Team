@@ -65,18 +65,34 @@ export default function Register() {
     e.preventDefault();
     if (!validate()) return;
 
-    // Gọi Thunk registerUser
-    const result = await dispatch(
-      registerUser({
-        displayName: formData.fullname,
-        email: formData.email,
-        password: formData.password,
-      })
-    );
+    try {
+      // Gọi Thunk registerUser và unwrap để ném lỗi nếu bị reject
+      const payload = await dispatch(
+        registerUser({
+          displayName: formData.fullname,
+          email: formData.email,
+          password: formData.password,
+        })
+      ).unwrap();
 
-    // Nếu thành công → chuyển hướng sang trang projects
-    if (registerUser.fulfilled.match(result)) {
-      navigate("/projects");
+      // Nếu không ném lỗi thì thành công → chuyển hướng sang trang đăng nhập
+      // console.log("Đăng ký thành công", payload);
+      alert("Đăng ký thành công! Vui lòng đăng nhập.");
+      navigate("/login");
+    } catch (err: any) {
+      // Ghi log lỗi để dễ debug
+      // console.error("Lỗi đăng ký:", err);
+
+      // Hiển thị lỗi lên form (ví dụ: Email đã tồn tại) để user biết
+      const message =
+        typeof err === "string" ? err : err?.message || "Đăng ký thất bại";
+
+      if (message.toLowerCase().includes("email")) {
+        setErrors((prev) => ({ ...prev, email: message }));
+      } else {
+        // Nếu là lỗi chung, show dưới email để user thấy (hoặc mở rộng thành một lỗi chung riêng)
+        setErrors((prev) => ({ ...prev, email: message }));
+      }
     }
   };
 
