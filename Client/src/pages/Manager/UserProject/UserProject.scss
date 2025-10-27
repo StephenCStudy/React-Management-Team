@@ -63,21 +63,21 @@
 
    &[class*="đúng tiến độ"] {
     background-color: #198754; // xanh lá
+    color: #fff !important;
   }
 
   &[class*="có rủi ro"] {
+    color: #fff !important;
     background-color: #ffa500; // cam
   }
 
   &[class*="trễ hạn"] {
+    color: #fff !important;
     background-color: #dc3545; // đỏ đậm
   }
+}
 
-  &[class*="đang thực hiện"] {
-    background-color: #0d6efd; // xanh dương
-  }
 
-  &[class*="chưa bắt đầu"] {
-    background-color: #6c757d; // xám
-  }
+.status {
+  color: black !important;
 }

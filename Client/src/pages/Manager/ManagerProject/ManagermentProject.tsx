@@ -1,27 +1,64 @@
-import { Table, Button } from "antd";
+import { Table, Button, Form } from "antd";
+import { Input } from "antd";
+const { Search } = Input;
 import "./ManagermentProject.scss";
-import { useState } from "react";
-// import ModalCreateEdit from "./Modal/ModalCreateEdit";
-// import ModalDelete from "./Modal/ModalDelete";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../apis/store/hooks";
 import ModalCreateEdit from "./Modal/Edit/ModalCreateEdit";
 import ModalDelete from "./Modal/Delete/ModalDelete";
+import {
+  fetchProjects,
+  deleteProject,
+} from "../../../apis/store/slice/projects/projects.slice";
+
+interface Project {
+  id: number;
+  projectName: string;
+  image: string;
+  members: Array<{ userId: number; role: string }>;
+}
+
+interface ProjectTableItem {
+  key: string;
+  id: number;
+  name: string;
+  image: string;
+}
 
 export default function ManagermentProject() {
   const [openModal, setOpenModal] = useState(false);
   const [openDelete, setOpenDeletel] = useState(false);
-  const navigate = useNavigate()
-  const dataSource = [
-    { key: "1", id: 1, name: "Xây dựng website thương mại điện tử" },
-    { key: "2", id: 2, name: "Phát triển ứng dụng di động" },
-    { key: "3", id: 3, name: "Quản lý dữ liệu khách hàng" },
-    { key: "4", id: 4, name: "Xây dựng website thương mại điện tử" },
-    { key: "5", id: 5, name: "Phát triển ứng dụng di động" },
-    { key: "6", id: 6, name: "Quản lý dữ liệu khách hàng" },
-    { key: "7", id: 7, name: "Xây dựng website thương mại điện tử" },
-    { key: "8", id: 8, name: "Phát triển ứng dụng di động" },
-    { key: "9", id: 9, name: "Quản lý dữ liệu khách hàng" },
-  ];
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [form] = Form.useForm();
+
+  // Lấy dữ liệu từ Redux store
+  const projects = useAppSelector((state) => state.projects.items);
+  const isLoading = useAppSelector((state) => state.projects.loading);
+
+  // Fetch projects khi component mount
+  useEffect(() => {
+    dispatch(fetchProjects());
+  }, [dispatch]);
+
+  // Filter projects based on search text
+  const filteredProjects = projects.filter((project: Project) =>
+    project.projectName.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  // Transform data for table
+  const dataSource: ProjectTableItem[] = filteredProjects.map(
+    (project: Project) => ({
+      key: project.id.toString(),
+      id: project.id,
+      name: project.projectName,
+      image: project.image,
+    })
+  );
 
   const columns: any = [
     {
@@ -42,44 +79,110 @@ export default function ManagermentProject() {
       align: "center",
       render: (_: any, record: any) => (
         <div className="action-buttons">
-          <Button className="btn-edit" onClick={() => setOpenModal(true)}>Sửa</Button>
-          <Button className="btn-delete" onClick={() => setOpenDeletel(true)}>Xóa</Button>
-          <Button className="btn-detail" onClick={()=>navigate("/Manager/Detail")}>Chi tiết</Button>
+          <Button
+            className="btn-edit"
+            onClick={() => {
+              setSelectedProject(record);
+              setOpenModal(true);
+            }}
+          >
+            Sửa
+          </Button>
+          <Button
+            className="btn-delete"
+            onClick={() => {
+              setSelectedProject(record);
+              setOpenDeletel(true);
+            }}
+          >
+            Xóa
+          </Button>
+          <Button
+            className="btn-detail"
+            onClick={() => navigate(`/Manager/Detail/${record.id}`)}
+          >
+            Chi tiết
+          </Button>
         </div>
       ),
     },
   ];
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (selectedProject) {
+      try {
+        await dispatch(deleteProject(selectedProject.id)).unwrap();
+        setOpenDeletel(false);
+      } catch (error) {
+        console.error("Failed to delete project:", error);
+      }
+    }
+  };
 
   return (
     <div className="Manager-container">
       <h1 className="Manager-title">Quản lý dự án nhóm</h1>
 
       <div className="Manager-setting">
-        <Button className="Manager-create" onClick={() => setOpenModal(true)}>
+        <Button
+          className="Manager-create"
+          onClick={() => {
+            setSelectedProject(null);
+            setOpenModal(true);
+          }}
+        >
           + Thêm dự án
         </Button>
-        <input className="Manager-search" placeholder="Tìm kiếm..." />
+        <Form form={form} className="search-form">
+          <Form.Item name="search" style={{ marginBottom: 0 }}>
+            <Search
+              // className="Manager-search"
+              placeholder="Tìm kiếm..."
+              onChange={(e) => setSearchText(e.target.value)}
+              onSearch={(value: string) =>
+                form.setFieldsValue({ search: value })
+              }
+              allowClear
+            />
+          </Form.Item>
+        </Form>
       </div>
 
       <p className="title-table">Danh Sách Dự Án</p>
       <Table
+        loading={isLoading}
         dataSource={dataSource}
         columns={columns}
-        pagination={{ pageSize: 9 }}
+        pagination={{
+          current: currentPage,
+          pageSize: 9,
+          total: dataSource.length,
+          onChange: (page) => setCurrentPage(page),
+        }}
         bordered
       />
 
       <ModalCreateEdit
-  open={openModal}
-  onCancel={() => setOpenModal(false)}
-  onOk={() => setOpenModal(false)}
-/>
+        open={openModal}
+        onCancel={() => {
+          setOpenModal(false);
+          setSelectedProject(null);
+        }}
+        onOk={() => {
+          setOpenModal(false);
+          setSelectedProject(null);
+        }}
+        project={selectedProject}
+      />
 
-
-       <ModalDelete
+      <ModalDelete
         open={openDelete}
-        onCancel={() => setOpenDeletel(false)}
-        // onDelete={handleDelete}
+        onCancel={() => {
+          setOpenDeletel(false);
+          setSelectedProject(null);
+        }}
+        onDelete={handleDelete}
       />
     </div>
   );

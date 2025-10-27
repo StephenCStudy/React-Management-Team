@@ -1,62 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "antd";
+import { Modal, Form, Input, Upload, message } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import type { UploadFile } from "antd/es/upload/interface";
 import "./ModalCreateEdit.scss";
+import { useAppDispatch } from "../../../../../apis/store/hooks";
+import { useFileUpload } from "../../../../../hooks/useFileUpload";
+import {
+  addProject,
+  updateProject,
+} from "../../../../../apis/store/slice/projects/projects.slice";
 
 interface ModalCreateEditProps {
   open: boolean;
   onCancel?: () => void;
   onOk?: () => void;
+  project?: any;
 }
 
 const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
   open,
   onCancel,
   onOk,
+  project,
 }) => {
-  const [name, setName] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [description, setDescription] = useState("");
+  const dispatch = useAppDispatch();
   const [error, setError] = useState("");
-
-  // Khi đóng modal, reset toàn bộ form
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [form] = Form.useForm();
   useEffect(() => {
-    if (!open) {
-      setName("");
-      setFile(null);
-      setDescription("");
-      setError("");
+    if (project) {
+      form.setFieldsValue({
+        projectName: project.name,
+        description: project.description,
+      });
+      if (project.image) {
+        setImageUrl(project.image);
+        setFileList([
+          {
+            uid: "-1",
+            name: "project-image.png",
+            status: "done",
+            url: project.image,
+          },
+        ]);
+      }
+    } else {
+      form.resetFields();
+      setFileList([]);
+      setImageUrl("");
+      console.log("imageUrl", imageUrl);
     }
-  }, [open]);
+  }, [project, form]);
 
-  const handleSave = () => {
-    const trimmed = name.trim();
+  const { beforeUpload, uploadFile } = useFileUpload();
 
-    if (trimmed === "") {
-      setError("Tên danh mục không được rỗng");
-      return;
+  const handleSave = async (values: any) => {
+    try {
+      // Handle image upload if there's a new image
+      let imagePath = project ? project.image : "";
+      if (fileList.length > 0 && fileList[0].originFileObj) {
+        imagePath = await uploadFile(fileList[0].originFileObj);
+      }
+
+      if (project) {
+        // Update existing project
+        await dispatch(
+          updateProject({
+            id: project.id,
+            ...values,
+            image: imagePath || project.image,
+            members: project.members || [],
+          })
+        );
+      } else {
+        // Create new project
+        await dispatch(
+          addProject({
+            ...values,
+            image: imagePath || "/default-project-image.png",
+            members: [],
+          })
+        );
+      }
+      if (onOk) onOk();
+    } catch (err) {
+      console.error("Failed to save project:", err);
+      setError("Có lỗi xảy ra khi lưu dự án");
     }
-
-    // Giả lập kiểm tra trùng tên (ví dụ từ localStorage)
-    const existingNames = ["Dự án A", "Dự án B"];
-    const isDuplicate = existingNames.some(
-      (item) => item.toLowerCase() === trimmed.toLowerCase()
-    );
-
-    if (isDuplicate) {
-      setError("Tên danh mục đã tồn tại");
-      return;
-    }
-
-    // Nếu hợp lệ
-    setError("");
-    if (onOk) onOk();
   };
 
   const handleCancel = () => {
-    // reset input và đóng modal
-    setName("");
-    setFile(null);
-    setDescription("");
+    form.resetFields();
     setError("");
     if (onCancel) onCancel();
   };
@@ -70,40 +105,75 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
       footer={null}
       onCancel={handleCancel}
       className="modal-create-edit"
+      destroyOnClose
     >
-      <div className="modal-content">
-        <label>Tên dự án</label>
-        <input
-          type="text"
-          placeholder="Nhập tên dự án"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className={error ? "input-error" : ""}
-        />
+      <Form
+        form={form}
+        layout="vertical"
+        className="modal-content"
+        onFinish={handleSave}
+        preserve={false}
+      >
+        <Form.Item
+          label="Tên dự án"
+          name="projectName"
+          rules={[{ required: true, message: "Vui lòng nhập tên dự án!" }]}
+        >
+          <Input placeholder="Nhập tên dự án" />
+        </Form.Item>
+
+        <Form.Item label="Mô tả dự án" name="description">
+          <Input.TextArea placeholder="Nhập mô tả..." />
+        </Form.Item>
+
+        <Form.Item
+          label="Hình ảnh dự án"
+          valuePropName="fileList"
+          getValueFromEvent={(e) => {
+            if (Array.isArray(e)) {
+              return e;
+            }
+            return e?.fileList || [];
+          }}
+        >
+          <Upload
+            accept="image/*"
+            listType="picture-card"
+            fileList={fileList}
+            beforeUpload={beforeUpload}
+            onChange={({ fileList: newFileList }) => {
+              setFileList(newFileList);
+            }}
+            customRequest={async ({ file, onSuccess }) => {
+              if (file instanceof File) {
+                try {
+                  await uploadFile(file);
+                  onSuccess?.("ok");
+                } catch (error) {
+                  message.error("Upload failed");
+                }
+              }
+            }}
+          >
+            {fileList.length === 0 && (
+              <div>
+                <UploadOutlined />
+                <div style={{ marginTop: 8 }}>Tải lên</div>
+              </div>
+            )}
+          </Upload>
+        </Form.Item>
+
         {error && <p className="error-text">{error}</p>}
-
-        <label>Hình ảnh dự án</label>
-        <input
-          type="file"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-        />
-
-        <label>Mô tả dự án</label>
-        <textarea
-          placeholder="Nhập mô tả..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
-
-      <div className="modal-actions">
-        <button className="btn-cancel" onClick={handleCancel}>
-          Hủy
-        </button>
-        <button className="btn-save" onClick={handleSave}>
-          Lưu
-        </button>
-      </div>
+        <div className="modal-actions">
+          <button className="btn-cancel" type="button" onClick={handleCancel}>
+            Hủy
+          </button>
+          <button className="btn-save" type="submit">
+            Lưu
+          </button>
+        </div>
+      </Form>
     </Modal>
   );
 };
