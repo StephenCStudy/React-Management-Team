@@ -3,72 +3,304 @@
     {
       "id": "1",
       "fullName": "An Nguyễn",
-      "email": "nguyenquangan@gmail.com",
+      "email": "annguyen@example.com",
       "password": "123456"
     },
     {
       "id": "2",
       "fullName": "Linh Trần",
-      "email": "tranlinh2000@gmail.com",
+      "email": "tranlinh@example.com",
       "password": "abcdef"
     },
     {
       "id": "3",
       "fullName": "Minh Phạm",
-      "email": "phamminhdev@gmail.com",
+      "email": "minhpham@example.com",
       "password": "qwerty"
     },
     {
-      "id": "6ec6",
-      "displayName": "Trần Đức Anh",
-      "email": "tranducanh31032006@gmail.com",
-      "password": "12345678",
-      "isAdmin": false
+      "id": "4",
+      "fullName": "Huy Lê",
+      "email": "huy.le@example.com",
+      "password": "pass123"
+    },
+    {
+      "id": "5",
+      "fullName": "Tú Đặng",
+      "email": "tudang@example.com",
+      "password": "654321"
     }
   ],
   "projects": [
     {
       "id": "1",
-      "projectName": "Xây dựng website thương mại điện tử",
-      "image": "https://th.bing.com/th/id/OIP.LbWj8r52NjMD18EBNk2kYQHaEK?w=285&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+      "projectName": "Website thương mại điện tử",
+      "description": "Phát triển nền tảng bán hàng online đa kênh",
+      "image": "https://source.unsplash.com/600x400/?ecommerce",
       "members": [
         {
-          "userId": 1,
-          "role": "Project owner"
+          "userId": "1",
+          "role": "Owner"
         },
         {
-          "userId": 2,
-          "role": "Frontend developer"
+          "userId": "2",
+          "role": "Frontend Developer"
         }
       ]
     },
     {
       "id": "2",
       "projectName": "Ứng dụng quản lý công việc nhóm",
-      "image": "https://th.bing.com/th/id/OIP.Cufuqo6ao94s-6v3PEUutAHaEo?w=250&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+      "description": "Hệ thống quản lý task và tiến độ nhóm",
+      "image": "https://source.unsplash.com/600x400/?teamwork",
       "members": [
         {
-          "userId": 3,
-          "role": "Project owner"
+          "userId": "3",
+          "role": "Project Manager"
         },
         {
-          "userId": 4,
-          "role": "Backend developer"
+          "userId": "4",
+          "role": "Backend Developer"
         }
       ]
     },
     {
       "id": "3",
-      "projectName": "Hệ thống đặt vé xem phim trực tuyến",
-      "image": "https://th.bing.com/th/id/OIP.3n12M9f1MYYTJu7AihQHIQHaEK?w=307&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+      "projectName": "Hệ thống đặt vé xem phim",
+      "description": "Trang web cho phép người dùng đặt vé online",
+      "image": "https://source.unsplash.com/600x400/?cinema",
       "members": [
         {
-          "userId": 5,
-          "role": "Project owner"
+          "userId": "5",
+          "role": "UI Designer"
         },
         {
-          "userId": 6,
-          "role": "UI Designer"
+          "userId": "2",
+          "role": "Frontend Developer"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "projectName": "Ứng dụng học trực tuyến",
+      "description": "Nền tảng học tập cho sinh viên và giảng viên",
+      "image": "https://source.unsplash.com/600x400/?education",
+      "members": [
+        {
+          "userId": "3",
+          "role": "Owner"
+        },
+        {
+          "userId": "1",
+          "role": "Fullstack Developer"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "projectName": "App quản lý tài chính cá nhân",
+      "description": "Ứng dụng theo dõi thu chi và phân tích chi tiêu",
+      "image": "https://source.unsplash.com/600x400/?finance",
+      "members": [
+        {
+          "userId": "4",
+          "role": "Backend Developer"
+        },
+        {
+          "userId": "5",
+          "role": "Tester"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "projectName": "Website bán đồ nội thất",
+      "description": "Cửa hàng trực tuyến chuyên bán nội thất hiện đại",
+      "image": "https://source.unsplash.com/600x400/?furniture",
+      "members": [
+        {
+          "userId": "2",
+          "role": "Owner"
+        },
+        {
+          "userId": "3",
+          "role": "Frontend Developer"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "projectName": "Ứng dụng đặt đồ ăn nhanh",
+      "description": "App đặt món và giao hàng nhanh trong thành phố",
+      "image": "https://source.unsplash.com/600x400/?food",
+      "members": [
+        {
+          "userId": "1",
+          "role": "Owner"
+        },
+        {
+          "userId": "5",
+          "role": "UX Designer"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "projectName": "Trang tin tức công nghệ",
+      "description": "Cập nhật tin tức và xu hướng công nghệ mới nhất",
+      "image": "https://source.unsplash.com/600x400/?technology",
+      "members": [
+        {
+          "userId": "3",
+          "role": "Content Manager"
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "projectName": "Ứng dụng thể thao & sức khỏe",
+      "description": "Theo dõi sức khỏe, tập luyện, và chế độ dinh dưỡng",
+      "image": "https://source.unsplash.com/600x400/?fitness",
+      "members": [
+        {
+          "userId": "2",
+          "role": "Owner"
+        },
+        {
+          "userId": "4",
+          "role": "Mobile Developer"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "projectName": "Website du lịch Việt Nam",
+      "description": "Khám phá và đặt tour du lịch trong nước",
+      "image": "https://source.unsplash.com/600x400/?travel",
+      "members": [
+        {
+          "userId": "1",
+          "role": "Owner"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "projectName": "Ứng dụng quản lý sinh viên",
+      "description": "Hệ thống theo dõi điểm và tiến độ học tập",
+      "image": "https://source.unsplash.com/600x400/?university",
+      "members": [
+        {
+          "userId": "3",
+          "role": "Database Admin"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "projectName": "App chia sẻ công thức nấu ăn",
+      "description": "Nền tảng chia sẻ và đánh giá công thức nấu ăn",
+      "image": "https://source.unsplash.com/600x400/?cooking",
+      "members": [
+        {
+          "userId": "5",
+          "role": "Product Owner"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "projectName": "Ứng dụng học tiếng Anh",
+      "description": "App học tiếng Anh qua hội thoại và trò chơi",
+      "image": "https://source.unsplash.com/600x400/?english",
+      "members": [
+        {
+          "userId": "2",
+          "role": "Backend Developer"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "projectName": "Trang portfolio cá nhân",
+      "description": "Website giới thiệu bản thân và dự án cá nhân",
+      "image": "https://source.unsplash.com/600x400/?portfolio",
+      "members": [
+        {
+          "userId": "4",
+          "role": "Owner"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "projectName": "Ứng dụng podcast",
+      "description": "Nền tảng nghe và chia sẻ podcast",
+      "image": "https://source.unsplash.com/600x400/?podcast",
+      "members": [
+        {
+          "userId": "1",
+          "role": "Frontend Developer"
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "projectName": "App thương mại NFT",
+      "description": "Sàn giao dịch và trưng bày tác phẩm NFT",
+      "image": "https://source.unsplash.com/600x400/?nft",
+      "members": [
+        {
+          "userId": "3",
+          "role": "Blockchain Dev"
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "projectName": "Ứng dụng bán vé sự kiện",
+      "description": "Nền tảng quản lý và bán vé cho sự kiện",
+      "image": "https://source.unsplash.com/600x400/?event",
+      "members": [
+        {
+          "userId": "4",
+          "role": "Frontend Developer"
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "projectName": "Website tin tức thể thao",
+      "description": "Trang cập nhật kết quả bóng đá & tin thể thao",
+      "image": "https://source.unsplash.com/600x400/?football",
+      "members": [
+        {
+          "userId": "2",
+          "role": "Editor"
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "projectName": "App đặt taxi",
+      "description": "Ứng dụng gọi xe nội thành tiện lợi",
+      "image": "https://source.unsplash.com/600x400/?taxi",
+      "members": [
+        {
+          "userId": "5",
+          "role": "Mobile Developer"
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "projectName": "Ứng dụng thời tiết toàn cầu",
+      "description": "Theo dõi dự báo thời tiết theo vị trí người dùng",
+      "image": "https://source.unsplash.com/600x400/?weather",
+      "members": [
+        {
+          "userId": "1",
+          "role": "Owner"
         }
       ]
     }
@@ -77,59 +309,359 @@
     {
       "id": "1",
       "key": "1",
-      "taskName": "Soạn thảo đề cương dự án",
-      "assigneeId": 1,
+      "taskName": "Thiết kế UI trang chủ",
+      "assigneeId": 2,
       "projectId": 1,
       "assignDate": "2025-03-24",
-      "dueDate": "2025-03-26",
-      "priority": "Thấp",
+      "dueDate": "2025-03-28",
+      "priority": "Cao",
       "progress": "Đúng tiến độ",
-      "status": "To do"
+      "status": "In progress"
     },
     {
       "id": "2",
       "key": "2",
-      "taskName": "Thiết kế giao diện trang chủ",
-      "assigneeId": 2,
+      "taskName": "Phân tích yêu cầu người dùng",
+      "assigneeId": 1,
       "projectId": 1,
-      "assignDate": "2025-03-27",
-      "dueDate": "2025-04-02",
+      "assignDate": "2025-03-20",
+      "dueDate": "2025-03-25",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "3",
+      "key": "3",
+      "taskName": "Xây dựng API xác thực",
+      "assigneeId": 3,
+      "projectId": 2,
+      "assignDate": "2025-03-21",
+      "dueDate": "2025-03-30",
       "priority": "Cao",
       "progress": "Có rủi ro",
       "status": "In progress"
     },
     {
-      "id": "3",
-      "key": "3",
-      "taskName": "Xây dựng API quản lý nhiệm vụ",
+      "id": "4",
+      "key": "4",
+      "taskName": "Tạo schema cơ sở dữ liệu",
       "assigneeId": 4,
       "projectId": 2,
       "assignDate": "2025-03-25",
-      "dueDate": "2025-03-30",
+      "dueDate": "2025-04-02",
       "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "5",
+      "key": "5",
+      "taskName": "Thiết kế trang chọn ghế",
+      "assigneeId": 5,
+      "projectId": 3,
+      "assignDate": "2025-04-01",
+      "dueDate": "2025-04-10",
+      "priority": "Thấp",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "6",
+      "key": "6",
+      "taskName": "Viết test unit",
+      "assigneeId": 2,
+      "projectId": 4,
+      "assignDate": "2025-04-02",
+      "dueDate": "2025-04-06",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "In progress"
+    },
+    {
+      "id": "7",
+      "key": "7",
+      "taskName": "Thiết kế logo ứng dụng",
+      "assigneeId": 1,
+      "projectId": 5,
+      "assignDate": "2025-03-28",
+      "dueDate": "2025-04-05",
+      "priority": "Thấp",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "8",
+      "key": "8",
+      "taskName": "Tạo REST API cho người dùng",
+      "assigneeId": 4,
+      "projectId": 6,
+      "assignDate": "2025-04-03",
+      "dueDate": "2025-04-08",
+      "priority": "Cao",
+      "progress": "Có rủi ro",
+      "status": "In progress"
+    },
+    {
+      "id": "9",
+      "key": "9",
+      "taskName": "Thiết kế giao diện admin",
+      "assigneeId": 3,
+      "projectId": 6,
+      "assignDate": "2025-03-30",
+      "dueDate": "2025-04-04",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "10",
+      "key": "10",
+      "taskName": "Kiểm thử API đơn hàng",
+      "assigneeId": 2,
+      "projectId": 7,
+      "assignDate": "2025-04-04",
+      "dueDate": "2025-04-10",
+      "priority": "Cao",
+      "progress": "Trễ hạn",
+      "status": "In progress"
+    },
+    {
+      "id": "11",
+      "key": "11",
+      "taskName": "Cập nhật giao diện giỏ hàng",
+      "assigneeId": 5,
+      "projectId": 7,
+      "assignDate": "2025-04-05",
+      "dueDate": "2025-04-09",
+      "priority": "Thấp",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "12",
+      "key": "12",
+      "taskName": "Cấu hình CI/CD pipeline",
+      "assigneeId": 1,
+      "projectId": 8,
+      "assignDate": "2025-03-28",
+      "dueDate": "2025-04-03",
+      "priority": "Cao",
+      "progress": "Có rủi ro",
+      "status": "In progress"
+    },
+    {
+      "id": "13",
+      "key": "13",
+      "taskName": "Xây dựng module chat",
+      "assigneeId": 3,
+      "projectId": 9,
+      "assignDate": "2025-03-26",
+      "dueDate": "2025-04-01",
+      "priority": "Cao",
       "progress": "Trễ hạn",
       "status": "To do"
     },
     {
-      "id": "4",
-      "key": "4",
-      "taskName": "Thiết kế giao diện bảng Kanban",
-      "assigneeId": 3,
-      "projectId": 2,
-      "assignDate": "2025-03-28",
+      "id": "14",
+      "key": "14",
+      "taskName": "Thiết kế dashboard quản trị",
+      "assigneeId": 2,
+      "projectId": 9,
+      "assignDate": "2025-03-24",
+      "dueDate": "2025-03-30",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "15",
+      "key": "15",
+      "taskName": "Viết hướng dẫn sử dụng",
+      "assigneeId": 4,
+      "projectId": 10,
+      "assignDate": "2025-03-25",
       "dueDate": "2025-04-05",
+      "priority": "Thấp",
+      "progress": "Đúng tiến độ",
+      "status": "In progress"
+    },
+    {
+      "id": "16",
+      "key": "16",
+      "taskName": "Tối ưu hiệu suất React",
+      "assigneeId": 5,
+      "projectId": 11,
+      "assignDate": "2025-03-23",
+      "dueDate": "2025-03-29",
+      "priority": "Cao",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "17",
+      "key": "17",
+      "taskName": "Phân quyền người dùng",
+      "assigneeId": 1,
+      "projectId": 12,
+      "assignDate": "2025-03-26",
+      "dueDate": "2025-04-03",
+      "priority": "Cao",
+      "progress": "Có rủi ro",
+      "status": "In progress"
+    },
+    {
+      "id": "18",
+      "key": "18",
+      "taskName": "Kiểm thử UI/UX",
+      "assigneeId": 2,
+      "projectId": 13,
+      "assignDate": "2025-04-01",
+      "dueDate": "2025-04-07",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "19",
+      "key": "19",
+      "taskName": "Cập nhật SEO cho website",
+      "assigneeId": 4,
+      "projectId": 14,
+      "assignDate": "2025-03-30",
+      "dueDate": "2025-04-05",
+      "priority": "Thấp",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "20",
+      "key": "20",
+      "taskName": "Tạo báo cáo tháng",
+      "assigneeId": 3,
+      "projectId": 15,
+      "assignDate": "2025-03-25",
+      "dueDate": "2025-03-31",
+      "priority": "Cao",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "21",
+      "key": "21",
+      "taskName": "Thiết kế API thời tiết",
+      "assigneeId": 5,
+      "projectId": 20,
+      "assignDate": "2025-03-24",
+      "dueDate": "2025-03-29",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "22",
+      "key": "22",
+      "taskName": "Kết nối API Google Map",
+      "assigneeId": 2,
+      "projectId": 19,
+      "assignDate": "2025-03-22",
+      "dueDate": "2025-03-27",
       "priority": "Cao",
       "progress": "Đúng tiến độ",
       "status": "In progress"
     },
     {
-      "id": "5",
-      "key": "5",
-      "taskName": "Thiết kế trang chọn ghế xem phim",
-      "assigneeId": 6,
-      "projectId": 3,
-      "assignDate": "2025-04-01",
-      "dueDate": "2025-04-10",
+      "id": "23",
+      "key": "23",
+      "taskName": "Phân tích dữ liệu khách hàng",
+      "assigneeId": 4,
+      "projectId": 18,
+      "assignDate": "2025-03-28",
+      "dueDate": "2025-04-02",
+      "priority": "Cao",
+      "progress": "Trễ hạn",
+      "status": "In progress"
+    },
+    {
+      "id": "24",
+      "key": "24",
+      "taskName": "Thiết kế wireframe trang đăng nhập",
+      "assigneeId": 1,
+      "projectId": 17,
+      "assignDate": "2025-03-27",
+      "dueDate": "2025-04-02",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "25",
+      "key": "25",
+      "taskName": "Tạo component chung",
+      "assigneeId": 3,
+      "projectId": 16,
+      "assignDate": "2025-03-26",
+      "dueDate": "2025-04-01",
+      "priority": "Thấp",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "26",
+      "key": "26",
+      "taskName": "Tối ưu database truy vấn",
+      "assigneeId": 4,
+      "projectId": 11,
+      "assignDate": "2025-03-30",
+      "dueDate": "2025-04-04",
+      "priority": "Cao",
+      "progress": "Có rủi ro",
+      "status": "In progress"
+    },
+    {
+      "id": "27",
+      "key": "27",
+      "taskName": "Viết API quản lý vé",
+      "assigneeId": 2,
+      "projectId": 17,
+      "assignDate": "2025-03-29",
+      "dueDate": "2025-04-05",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "28",
+      "key": "28",
+      "taskName": "Thiết kế biểu đồ phân tích",
+      "assigneeId": 1,
+      "projectId": 18,
+      "assignDate": "2025-03-23",
+      "dueDate": "2025-03-29",
+      "priority": "Cao",
+      "progress": "Đúng tiến độ",
+      "status": "Done"
+    },
+    {
+      "id": "29",
+      "key": "29",
+      "taskName": "Triển khai hosting website",
+      "assigneeId": 5,
+      "projectId": 19,
+      "assignDate": "2025-03-25",
+      "dueDate": "2025-03-30",
+      "priority": "Trung bình",
+      "progress": "Đúng tiến độ",
+      "status": "To do"
+    },
+    {
+      "id": "30",
+      "key": "30",
+      "taskName": "Tạo hướng dẫn sử dụng API",
+      "assigneeId": 3,
+      "projectId": 20,
+      "assignDate": "2025-03-21",
+      "dueDate": "2025-03-28",
       "priority": "Thấp",
       "progress": "Đúng tiến độ",
       "status": "Done"

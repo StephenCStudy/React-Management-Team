@@ -1,11 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { Projects } from "../../../../interfaces/manager/mamaberProject/managerProject";
+
 
 // Định nghĩa kiểu dữ liệu cho Project
-interface Project {
-  id: number;
-  projectName: string;
-  image: string;
-  members: Array<{ userId: number; role: string }>;
+interface Project extends Projects {
+  description?: string;
 }
 
 // Định nghĩa kiểu dữ liệu cho state

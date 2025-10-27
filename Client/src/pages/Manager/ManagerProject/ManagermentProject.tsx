@@ -1,5 +1,7 @@
 import { Table, Button, Form } from "antd";
 import { Input } from "antd";
+import type { ColumnType } from "antd/es/table";
+import type { AlignType } from "rc-table/lib/interface";
 const { Search } = Input;
 import "./ManagermentProject.scss";
 import { useState, useEffect } from "react";
@@ -13,44 +15,45 @@ import {
 } from "../../../apis/store/slice/projects/projects.slice";
 
 interface Project {
-  id: number;
+  id: string | number;
   projectName: string;
-  image: string;
-  members: Array<{ userId: number; role: string }>;
+  image?: string;
+  members?: Array<{ userId: number; role: string }>;
 }
 
 interface ProjectTableItem {
   key: string;
-  id: number;
+  id: string | number;
   name: string;
-  image: string;
+  image?: string;
 }
 
 export default function ManagermentProject() {
-  const [openModal, setOpenModal] = useState(false);
-  const [openDelete, setOpenDeletel] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchText, setSearchText] = useState("");
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [form] = Form.useForm();
+  const [openModal, setOpenModal] = useState(false); // Modal tạo và chỉnh sửa
+  const [openDelete, setOpenDelete] = useState(false); // Modal xóa
+  const [selectedProject, setSelectedProject] = useState<any>(null); // Lưu project đang được chọn để sửa hoặc xóa
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại của bảng
+  const [pageSize, setPageSize] = useState(5); // Số phần tử trên mỗi trang
+  const [searchText, setSearchText] = useState(""); // Text tìm kiếm
+  const navigate = useNavigate(); // Điều hướng giữa các trang
+  const dispatch = useAppDispatch(); // Gọi action trong Redux
+  const [form] = Form.useForm(); // Form để quản lý tìm kiếm
 
   // Lấy dữ liệu từ Redux store
-  const projects = useAppSelector((state) => state.projects.items);
-  const isLoading = useAppSelector((state) => state.projects.loading);
+  const projects = useAppSelector((state) => state.projects.items); // Danh sách dự án
+  const isLoading = useAppSelector((state) => state.projects.loading); // Trạng thái tải dữ liệu
 
-  // Fetch projects khi component mount
+  // Lấy danh sách dự án khi component được mount
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  // Filter projects based on search text
+  // Lọc dự án theo từ khóa tìm kiếm
   const filteredProjects = projects.filter((project: Project) =>
     project.projectName.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Transform data for table
+  // Chuyển đổi dữ liệu dự án thành định dạng phù hợp cho bảng
   const dataSource: ProjectTableItem[] = filteredProjects.map(
     (project: Project) => ({
       key: project.id.toString(),
@@ -60,12 +63,13 @@ export default function ManagermentProject() {
     })
   );
 
-  const columns: any = [
+  // Định nghĩa các cột cho bảng
+  const columns: ColumnType<ProjectTableItem>[] = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      align: "center",
+      align: "center" as AlignType,
       width: 80,
     },
     {
@@ -76,13 +80,16 @@ export default function ManagermentProject() {
     {
       title: "Hành Động",
       key: "action",
-      align: "center",
+      align: "center" as AlignType,
       render: (_: any, record: any) => (
         <div className="action-buttons">
           <Button
             className="btn-edit"
             onClick={() => {
-              setSelectedProject(record);
+              // Mở modal sửa dự án
+              const fullProject =
+                projects.find((p: any) => p.id == record.id) || record;
+              setSelectedProject(fullProject);
               setOpenModal(true);
             }}
           >
@@ -92,7 +99,7 @@ export default function ManagermentProject() {
             className="btn-delete"
             onClick={() => {
               setSelectedProject(record);
-              setOpenDeletel(true);
+              setOpenDelete(true);
             }}
           >
             Xóa
@@ -108,18 +115,19 @@ export default function ManagermentProject() {
     },
   ];
 
-  // Handle delete
+  // Xử lý xóa dự án
   const handleDelete = async () => {
     if (selectedProject) {
       try {
         await dispatch(deleteProject(selectedProject.id)).unwrap();
-        setOpenDeletel(false);
+        setOpenDelete(false);
       } catch (error) {
         console.error("Failed to delete project:", error);
       }
     }
   };
 
+  // Giao diện component
   return (
     <div className="Manager-container">
       <h1 className="Manager-title">Quản lý dự án nhóm</h1>
@@ -156,9 +164,14 @@ export default function ManagermentProject() {
         columns={columns}
         pagination={{
           current: currentPage,
-          pageSize: 9,
+          pageSize: pageSize,
           total: dataSource.length,
-          onChange: (page) => setCurrentPage(page),
+          pageSizeOptions: ["5", "9", "12", "15", "20"],
+          showSizeChanger: true,
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
         }}
         bordered
       />
@@ -179,7 +192,7 @@ export default function ManagermentProject() {
       <ModalDelete
         open={openDelete}
         onCancel={() => {
-          setOpenDeletel(false);
+          setOpenDelete(false);
           setSelectedProject(null);
         }}
         onDelete={handleDelete}

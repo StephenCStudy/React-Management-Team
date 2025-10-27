@@ -26,32 +26,40 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
   const dispatch = useAppDispatch();
   const [error, setError] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [imageUrl, setImageUrl] = useState<string>("");
   const [form] = Form.useForm();
+
+  // Set initial form values when modal opens. Use project.projectName if present,
+  // fall back to project.name (table row) for compatibility.
   useEffect(() => {
-    if (project) {
-      form.setFieldsValue({
-        projectName: project.name,
-        description: project.description,
-      });
-      if (project.image) {
-        setImageUrl(project.image);
-        setFileList([
-          {
-            uid: "-1",
-            name: "project-image.png",
-            status: "done",
-            url: project.image,
-          },
-        ]);
+    if (open) {
+      if (project) {
+        console.log("Setting form values for project:", project);
+        form.setFieldsValue({
+          projectName: project.projectName ?? project.name ?? "",
+          description: project.description ?? "",
+        });
+        if (project.image) {
+          setFileList([
+            {
+              uid: "-1",
+              name: "project-image.png",
+              status: "done",
+              url: project.image,
+            },
+          ]);
+        } else {
+          setFileList([]);
+        }
+      } else {
+        form.resetFields();
+        setFileList([]);
       }
     } else {
+      // when modal is closed, clear form to avoid stale values
       form.resetFields();
       setFileList([]);
-      setImageUrl("");
-      console.log("imageUrl", imageUrl);
     }
-  }, [project, form]);
+  }, [project, form, open]);
 
   const { beforeUpload, uploadFile } = useFileUpload();
 
@@ -68,7 +76,8 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
         await dispatch(
           updateProject({
             id: project.id,
-            ...values,
+            projectName: values.projectName, // Đảm bảo tên field là projectName khi gửi lên server
+            description: values.description,
             image: imagePath || project.image,
             members: project.members || [],
           })
@@ -77,7 +86,8 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
         // Create new project
         await dispatch(
           addProject({
-            ...values,
+            projectName: values.projectName, // Đảm bảo tên field là projectName khi gửi lên server
+            description: values.description,
             image: imagePath || "/default-project-image.png",
             members: [],
           })
@@ -98,14 +108,18 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
 
   return (
     <Modal
-      title={<h3 className="modal-title">Thêm/Sửa dự án</h3>}
+      title={
+        <h3 className="modal-title">
+          {project ? "Sửa dự án" : "Thêm dự án mới"}
+        </h3>
+      }
       open={open}
       centered
       width={480}
       footer={null}
       onCancel={handleCancel}
       className="modal-create-edit"
-      destroyOnClose
+      // keep children mounted to avoid form remount timing issues
     >
       <Form
         form={form}
@@ -136,7 +150,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
             return e?.fileList || [];
           }}
         >
-          <Upload
+          <Upload // thêm hình ảnh
             accept="image/*"
             listType="picture-card"
             fileList={fileList}
@@ -170,7 +184,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
             Hủy
           </button>
           <button className="btn-save" type="submit">
-            Lưu
+            {project ? "Cập nhật" : "Thêm mới"}
           </button>
         </div>
       </Form>
