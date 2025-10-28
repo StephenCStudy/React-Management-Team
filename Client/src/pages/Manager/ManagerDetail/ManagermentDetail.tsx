@@ -265,7 +265,7 @@ const ManagermentDetail: React.FC = () => {
 
   return (
     <ConfigProvider
-      getPopupContainer={() => document.body} // ✅ fix dropdown layout
+      getPopupContainer={() => document.body} //  fix dropdown layout
     >
       <div className="managerDetail-container">
         <div className="tool-setting">

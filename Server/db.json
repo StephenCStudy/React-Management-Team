@@ -4,31 +4,43 @@
       "id": "1",
       "fullName": "An Nguyễn",
       "email": "annguyen@example.com",
-      "password": "123456"
+      "password": "123456",
+      "isAdmin": true
     },
     {
       "id": "2",
       "fullName": "Linh Trần",
       "email": "tranlinh@example.com",
-      "password": "abcdef"
+      "password": "abcdef",
+      "isAdmin": true
     },
     {
       "id": "3",
       "fullName": "Minh Phạm",
       "email": "minhpham@example.com",
-      "password": "qwerty"
+      "password": "qwerty",
+      "isAdmin": true
     },
     {
       "id": "4",
       "fullName": "Huy Lê",
       "email": "huy.le@example.com",
-      "password": "pass123"
+      "password": "pass123",
+      "isAdmin": true
     },
     {
       "id": "5",
       "fullName": "Tú Đặng",
       "email": "tudang@example.com",
-      "password": "654321"
+      "password": "654321",
+      "isAdmin": true
+    },
+    {
+      "id": "36ad",
+      "displayName": "Trần Đức Anh",
+      "email": "tranducanh31032006@gmail.com",
+      "password": "12345678",
+      "isAdmin": false
     }
   ],
   "projects": [
@@ -97,10 +109,9 @@
       ]
     },
     {
-      "id": "5",
       "projectName": "App quản lý tài chính cá nhân",
       "description": "Ứng dụng theo dõi thu chi và phân tích chi tiêu",
-      "image": "https://source.unsplash.com/600x400/?finance",
+      "image": "blob:http://localhost:5173/cc576c12-95d6-427c-9fdc-d48825cc616f",
       "members": [
         {
           "userId": "4",
@@ -110,7 +121,8 @@
           "userId": "5",
           "role": "Tester"
         }
-      ]
+      ],
+      "id": "5"
     },
     {
       "id": "6",

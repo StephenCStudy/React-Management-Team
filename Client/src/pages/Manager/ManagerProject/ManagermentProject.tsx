@@ -29,31 +29,28 @@ interface ProjectTableItem {
 }
 
 export default function ManagermentProject() {
-  const [openModal, setOpenModal] = useState(false); // Modal tạo và chỉnh sửa
-  const [openDelete, setOpenDelete] = useState(false); // Modal xóa
-  const [selectedProject, setSelectedProject] = useState<any>(null); // Lưu project đang được chọn để sửa hoặc xóa
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại của bảng
-  const [pageSize, setPageSize] = useState(5); // Số phần tử trên mỗi trang
-  const [searchText, setSearchText] = useState(""); // Text tìm kiếm
-  const navigate = useNavigate(); // Điều hướng giữa các trang
-  const dispatch = useAppDispatch(); // Gọi action trong Redux
-  const [form] = Form.useForm(); // Form để quản lý tìm kiếm
+  const [openModal, setOpenModal] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [form] = Form.useForm();
+  const user = useAppSelector((state) => state.auth.user);
 
-  // Lấy dữ liệu từ Redux store
-  const projects = useAppSelector((state) => state.projects.items); // Danh sách dự án
-  const isLoading = useAppSelector((state) => state.projects.loading); // Trạng thái tải dữ liệu
+  const projects = useAppSelector((state) => state.projects.items);
+  const isLoading = useAppSelector((state) => state.projects.loading);
 
-  // Lấy danh sách dự án khi component được mount
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  // Lọc dự án theo từ khóa tìm kiếm
   const filteredProjects = projects.filter((project: Project) =>
     project.projectName.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Chuyển đổi dữ liệu dự án thành định dạng phù hợp cho bảng
   const dataSource: ProjectTableItem[] = filteredProjects.map(
     (project: Project) => ({
       key: project.id.toString(),
@@ -63,7 +60,6 @@ export default function ManagermentProject() {
     })
   );
 
-  // Định nghĩa các cột cho bảng
   const columns: ColumnType<ProjectTableItem>[] = [
     {
       title: "ID",
@@ -86,7 +82,6 @@ export default function ManagermentProject() {
           <Button
             className="btn-edit"
             onClick={() => {
-              // Mở modal sửa dự án
               const fullProject =
                 projects.find((p: any) => p.id == record.id) || record;
               setSelectedProject(fullProject);
@@ -115,7 +110,6 @@ export default function ManagermentProject() {
     },
   ];
 
-  // Xử lý xóa dự án
   const handleDelete = async () => {
     if (selectedProject) {
       try {
@@ -127,76 +121,94 @@ export default function ManagermentProject() {
     }
   };
 
-  // Giao diện component
   return (
     <div className="Manager-container">
-      <h1 className="Manager-title">Quản lý dự án nhóm</h1>
+      {user?.isAdmin ? (
+        <>
+          <h1 className="Manager-title">Quản lý dự án nhóm</h1>
 
-      <div className="Manager-setting">
-        <Button
-          className="Manager-create"
-          onClick={() => {
-            setSelectedProject(null);
-            setOpenModal(true);
+          <div className="Manager-setting">
+            <Button
+              className="Manager-create"
+              onClick={() => {
+                setSelectedProject(null);
+                setOpenModal(true);
+              }}
+            >
+              + Thêm dự án
+            </Button>
+            <Form form={form} className="search-form">
+              <Form.Item name="search" style={{ marginBottom: 0 }}>
+                <Search
+                  placeholder="Tìm kiếm..."
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onSearch={(value: string) =>
+                    form.setFieldsValue({ search: value })
+                  }
+                  allowClear
+                />
+              </Form.Item>
+            </Form>
+          </div>
+
+          <p className="title-table">Danh Sách Dự Án</p>
+          <Table
+            loading={isLoading}
+            dataSource={dataSource}
+            columns={columns}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: dataSource.length,
+              pageSizeOptions: ["5", "9", "12", "15", "20"],
+              showSizeChanger: true,
+              onChange: (page, size) => {
+                setCurrentPage(page);
+                setPageSize(size);
+              },
+            }}
+            bordered
+          />
+
+          <ModalCreateEdit
+            open={openModal}
+            onCancel={() => {
+              setOpenModal(false);
+              setSelectedProject(null);
+            }}
+            onOk={() => {
+              setOpenModal(false);
+              setSelectedProject(null);
+            }}
+            project={selectedProject}
+          />
+
+          <ModalDelete
+            open={openDelete}
+            onCancel={() => {
+              setOpenDelete(false);
+              setSelectedProject(null);
+            }}
+            onDelete={handleDelete}
+          />
+        </>
+      ) : (
+        <div
+          style={{
+            padding: "20px",
+            textAlign: "center",
+            fontSize: "32px",
+            color: "black",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          + Thêm dự án
-        </Button>
-        <Form form={form} className="search-form">
-          <Form.Item name="search" style={{ marginBottom: 0 }}>
-            <Search
-              // className="Manager-search"
-              placeholder="Tìm kiếm..."
-              onChange={(e) => setSearchText(e.target.value)}
-              onSearch={(value: string) =>
-                form.setFieldsValue({ search: value })
-              }
-              allowClear
-            />
-          </Form.Item>
-        </Form>
-      </div>
-
-      <p className="title-table">Danh Sách Dự Án</p>
-      <Table
-        loading={isLoading}
-        dataSource={dataSource}
-        columns={columns}
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: dataSource.length,
-          pageSizeOptions: ["5", "9", "12", "15", "20"],
-          showSizeChanger: true,
-          onChange: (page, size) => {
-            setCurrentPage(page);
-            setPageSize(size);
-          },
-        }}
-        bordered
-      />
-
-      <ModalCreateEdit
-        open={openModal}
-        onCancel={() => {
-          setOpenModal(false);
-          setSelectedProject(null);
-        }}
-        onOk={() => {
-          setOpenModal(false);
-          setSelectedProject(null);
-        }}
-        project={selectedProject}
-      />
-
-      <ModalDelete
-        open={openDelete}
-        onCancel={() => {
-          setOpenDelete(false);
-          setSelectedProject(null);
-        }}
-        onDelete={handleDelete}
-      />
+          Bạn không có quyền truy cập do bạn là 
+          <b>{!user?.isAdmin ? " member" : " admin"}</b>
+        </div>
+      )}
     </div>
   );
 }

@@ -31,10 +31,8 @@ interface ViewMemberModalProps {
  * Helper để định nghĩa các vai trò
  */
 const ROLES = [
-  { value: "project-owner", label: "Project owner" },
-  { value: "frontend-dev", label: "Frontend developer" },
-  { value: "backend-dev", label: "Backend developer" },
-  { value: "member", label: "Member" },
+  { value: "project-owner", label: "Project owner" },  // isAdmin = true
+  { value: "member", label: "Member" },   // isAdmin = false
 ];
 
 const ViewMemberModal: React.FC<ViewMemberModalProps> = ({

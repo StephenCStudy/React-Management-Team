@@ -26,7 +26,7 @@ const initialState: AuthState = {
 };
 
 /*
-  ✅ Thunk: loginUser
+   Thunk: loginUser
   - Gửi yêu cầu đăng nhập đến API
   - Nếu thành công → lưu token + user
   - Nếu thất bại → hiển thị lỗi
@@ -51,13 +51,13 @@ export const loginUser = createAsyncThunk(
       }
 
       // Giả lập token 
-      const fakeToken = `token_${user.id}_${Date.now()}`;
+      const fakeToken = `${user.isAdmin}_${user.id}_${Date.now()}`;
 
       // Lưu vào localStorage để giữ trạng thái đăng nhập
       localStorage.setItem("token", fakeToken);
       localStorage.setItem("user", JSON.stringify(user));
 
-      message.success("Đăng nhập thành công 🎉");
+      message.success("Đăng nhập thành công ");
       return { user, token: fakeToken };
     } catch (error: any) {
       message.error(error.message || "Đăng nhập thất bại");
@@ -71,7 +71,7 @@ const loginSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // ✅ Logout: xóa token và user trong localStorage + Redux
+    //  Logout: xóa token và user trong localStorage + Redux
     logout: (state) => {
       state.user = null;
       state.token = null;
