@@ -12,14 +12,16 @@
       "fullName": "Linh Trần",
       "email": "tranlinh@example.com",
       "password": "abcdef",
-      "isAdmin": true
+      "isAdmin": true,
+      "role": "member"
     },
     {
       "id": "3",
       "fullName": "Minh Phạm",
       "email": "minhpham@example.com",
       "password": "qwerty",
-      "isAdmin": true
+      "isAdmin": true,
+      "role": "admin"
     },
     {
       "id": "4",

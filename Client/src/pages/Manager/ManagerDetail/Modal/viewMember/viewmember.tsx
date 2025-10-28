@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Modal, List, Avatar, Select } from "antd";
 import "./viewmember.scss";
+import type {
+  Member,
+  MemberRole,
+} from "../../../../../interfaces/manager/mamagerDetail/managerDetail";
 
 const { Option } = Select;
 
 /**
- * Định nghĩa cấu trúc dữ liệu cho một thành viên
+ * Định nghĩa interface cho thông tin hiển thị thành viên
  */
-export interface Member {
-  id: string | number; // ID duy nhất
+interface MemberDisplay {
+  userId: string;
   name: string;
-  email: string;
   avatarLabel: string; // Chữ cái đầu (ví dụ: AN)
-  avatarColor?: string; // (Optional) Màu nền cho avatar
-  role: string; // 'project-owner', 'frontend-dev', 'backend-dev'
+  role: MemberRole;
 }
 
 /**
@@ -22,8 +24,9 @@ export interface Member {
 interface ViewMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (updatedMembers: Member[]) => void;
-  members: Member[];
+  onSave: (updatedMember: Member) => void;
+  onDelete: (memberId: string) => void;
+  members: MemberDisplay[];
   isLoading?: boolean;
 }
 
@@ -31,59 +34,51 @@ interface ViewMemberModalProps {
  * Helper để định nghĩa các vai trò
  */
 const ROLES = [
-  { value: "project-owner", label: "Project owner" },  // isAdmin = true
-  { value: "member", label: "Member" },   // isAdmin = false
+  { value: "owner", label: "Chủ dự án" },
+  { value: "admin", label: "Quản trị viên" },
+  { value: "member", label: "Thành viên" },
 ];
 
 const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   members,
   isLoading = false,
 }) => {
   // State nội bộ để lưu thay đổi vai trò và xóa thành viên
-  const [internalMembers, setInternalMembers] = useState<Member[]>([]);
+  const [internalMembers, setInternalMembers] = useState<MemberDisplay[]>([]);
 
   // Khi mở modal, đồng bộ danh sách từ props
   useEffect(() => {
     if (isOpen) {
-      setInternalMembers(JSON.parse(JSON.stringify(members)));
+      setInternalMembers(members);
     }
   }, [members, isOpen]);
 
   /**
    * Xử lý khi thay đổi vai trò của một thành viên
+   * @param newRole - Vai trò mới được chọn
+   * @param memberId - ID của thành viên cần thay đổi vai trò
    */
-  const handleRoleChange = (newRole: string, memberId: string | number) => {
-    setInternalMembers((prevMembers) =>
-      prevMembers.map((member) =>
-        member.id === memberId ? { ...member, role: newRole } : member
-      )
-    );
+  const handleRoleChange = (newRole: MemberRole, memberId: string) => {
+    const member = internalMembers.find((m) => m.userId === memberId);
+    if (member) {
+      onSave({
+        userId: member.userId,
+        fullName: member.name,
+        role: newRole,
+      });
+    }
   };
 
   /**
-   * Xử lý khi nhấn icon thùng rác (xóa thành viên)
+   * Xử lý khi nhấn icon thùng rác để xóa thành viên
+   * @param memberId - ID của thành viên cần xóa
    */
-  const handleDeleteMember = (memberId: string | number) => {
-    setInternalMembers((prev) =>
-      prev.filter((member) => member.id !== memberId)
-    );
-  };
-
-  /**
-   * Xử lý khi nhấn "Lưu"
-   */
-  const handleSave = () => {
-    onSave(internalMembers);
-  };
-
-  /**
-   * Xử lý khi nhấn "Đóng"
-   */
-  const handleClose = () => {
-    onClose();
+  const handleDeleteMember = (memberId: string) => {
+    onDelete(memberId);
   };
 
   return (
@@ -92,7 +87,6 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
         <div
           style={{
             display: "flex",
-            // justifyContent: "space-between",
             gap: "350px",
             padding: "0 10px",
           }}
@@ -102,10 +96,10 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
         </div>
       }
       open={isOpen}
-      onCancel={handleClose}
-      onOk={handleSave}
-      okText="Lưu"
-      cancelText="Đóng"
+      onCancel={onClose}
+      onOk={onClose}
+      okText="Đóng"
+      cancelText="Hủy"
       confirmLoading={isLoading}
       className="view-member-modal"
       width={600}
@@ -114,16 +108,18 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
       <List
         itemLayout="horizontal"
         dataSource={internalMembers}
-        renderItem={(member) => (
+        renderItem={(member: MemberDisplay) => (
           <List.Item
-            key={member.id}
+            key={member.userId}
             actions={[
-              // Select chọn vai trò
+              // Select để chọn vai trò cho thành viên
               <Select
                 key="role-select"
                 value={member.role}
                 style={{ width: 170 }}
-                onChange={(newValue) => handleRoleChange(newValue, member.id)}
+                onChange={(newValue) =>
+                  handleRoleChange(newValue as MemberRole, member.userId)
+                }
                 bordered={false}
               >
                 {ROLES.map((role) => (
@@ -133,7 +129,7 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                 ))}
               </Select>,
 
-              // Icon thùng rác
+              // Nút xóa thành viên
               <i
                 key="delete-icon"
                 className="fa-solid fa-trash"
@@ -143,7 +139,7 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                   marginLeft: 10,
                   fontSize: 16,
                 }}
-                onClick={() => handleDeleteMember(member.id)}
+                onClick={() => handleDeleteMember(member.userId)}
                 title="Xóa thành viên"
               />,
             ]}
@@ -152,7 +148,7 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
               avatar={
                 <Avatar
                   style={{
-                    backgroundColor: member.avatarColor || "#f56a00",
+                    backgroundColor: "#f56a00",
                     verticalAlign: "middle",
                   }}
                 >
@@ -160,7 +156,7 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                 </Avatar>
               }
               title={<span>{member.name}</span>}
-              description={member.email}
+              description={member.role}
             />
           </List.Item>
         )}
@@ -169,4 +165,5 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
   );
 };
 
+// Xuất component để sử dụng ở các nơi khác
 export default ViewMemberModal;

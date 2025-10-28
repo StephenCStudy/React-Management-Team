@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import RegisterReducer from "./slice/auth/register.slice";
 import authReducer from "./slice/auth/login.slice";
 import projectsReducer from "./slice/projects/projects.slice";
-import DetailReducer from "./slice/projects/detail.slice";
+import managerDetailReducer from "./slice/projects/managerDetail.slice";
 
 // Cấu hình Redux store
 const store = configureStore({
@@ -12,12 +12,10 @@ const store = configureStore({
     auth: authReducer, // Slice quản lý xác thực người dùng
 
     // quản lý dự án
-    projects: projectsReducer, // Slice quản lý projects
+    projects: projectsReducer, // Slice quản lý danh sách dự án
 
-    // chi tiết dự án
-    detail: DetailReducer, // Slice quản lý chi tiết project
-
-    // quản lý dự án cá nhân
+    // quản lý chi tiết và thành viên dự án
+    managerDetail: managerDetailReducer, // Slice quản lý chi tiết và thành viên dự án
   },
 });
 

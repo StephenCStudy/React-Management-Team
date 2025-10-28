@@ -10,7 +10,16 @@ import ViewMemberModal from "./Modal/viewMember/viewmember";
 import type { Task } from "../../../interfaces/manager/mamagerDetail/managerDetail";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../apis/store/hooks";
-import { fetchProjects } from "../../../apis/store/slice/projects/detail.slice";
+import {
+  fetchProjectDetails,
+  addTask,
+  updateTask,
+  deleteTask,
+  updateMemberRole,
+  removeMember,
+  sortByDueDate,
+  sortByPriority,
+} from "../../../apis/store/slice/projects/managerDetail.slice";
 
 const { Search } = Input;
 
@@ -21,11 +30,18 @@ function getInitials(name: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+// Component chính quản lý chi tiết dự án
 const ManagermentDetail: React.FC = () => {
+  // Lấy ID dự án từ URL
   const { id } = useParams<{ id?: string }>();
+
+  // Khởi tạo dispatch để gửi action đến Redux store
   const dispatch = useAppDispatch();
-  const detailState = useAppSelector((s) => s.detail);
-  const project = detailState.data as any | null;
+
+  // Lấy state từ Redux store thông qua useSelector
+  const { project, tasks, loading } = useAppSelector(
+    (state) => state.managerDetail
+  );
 
   const [openCreateEdit, setOpenCreateEdit] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -37,67 +53,79 @@ const ManagermentDetail: React.FC = () => {
     Record<string, boolean>
   >({ "To do": true });
 
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [usersMap, setUsersMap] = useState<Record<string, string>>({});
   const [search, setSearch] = useState("");
 
+  // Gọi API để lấy dữ liệu dự án khi component được tải
   useEffect(() => {
-    if (id) dispatch(fetchProjects(id));
-  }, [id, dispatch]);
-
-  useEffect(() => {
-    if (!id) return;
-    let mounted = true;
-    async function loadData() {
-      try {
-        const [taskRes, userRes] = await Promise.all([
-          fetch(`http://localhost:3000/taskData?projectId=${id}`),
-          fetch(`http://localhost:3000/users`),
-        ]);
-        const taskJson = taskRes.ok ? await taskRes.json() : [];
-        const userJson = userRes.ok ? await userRes.json() : [];
-        if (!mounted) return;
-        setTasks(taskJson || []);
-        const map: Record<string, string> = {};
-        (userJson || []).forEach((u: any) => {
-          map[u.id] = u.fullName || u.displayName || u.email || String(u.id);
-        });
-        setUsersMap(map);
-      } catch (err) {
-        console.error("Lỗi khi tải dữ liệu:", err);
-      }
+    // Chỉ gọi API khi có ID dự án
+    if (id) {
+      // Dispatch action để lấy dữ liệu dự án và tải dữ liệu người dùng
+      dispatch(fetchProjectDetails(id));
+      loadUsers();
     }
-    loadData();
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
+  }, [id]); // Chạy lại effect khi id thay đổi
 
+  // Hàm tải danh sách người dùng
+  const loadUsers = async () => {
+    try {
+      const userRes = await fetch(`http://localhost:3000/users`);
+      const userJson = userRes.ok ? await userRes.json() : [];
+
+      const map: Record<string, string> = {};
+      (userJson || []).forEach((u: any) => {
+        map[u.id] = u.fullName || u.displayName || u.email || String(u.id);
+      });
+      setUsersMap(map);
+    } catch (err) {
+      console.error("Lỗi khi tải dữ liệu người dùng:", err);
+      message.error("Không thể tải danh sách người dùng");
+    }
+  };
+
+  // Tính toán danh sách thành viên với thông tin đầy đủ
   const projectMembers = useMemo(() => {
+    // Nếu không có thông tin dự án hoặc thành viên, trả về mảng rỗng
     if (!project?.members) return [];
-    return project.members.map((m: any) => ({
-      id: m.userId,
-      name: usersMap[m.userId] || String(m.userId),
-      role: m.role,
-      avatarLabel: getInitials(usersMap[m.userId] || String(m.userId)),
+
+    // Chuyển đổi dữ liệu thành viên sang định dạng hiển thị
+    return project.members.map((member) => ({
+      userId: member.userId,
+      name: usersMap[member.userId] || String(member.userId), // Lấy tên từ usersMap hoặc dùng ID nếu không có
+      role: member.role,
+      // Tạo chữ cái đầu làm avatar
+      avatarLabel: getInitials(
+        usersMap[member.userId] || String(member.userId)
+      ),
     }));
-  }, [project, usersMap]);
+  }, [project, usersMap]); // Tính toán lại khi project hoặc usersMap thay đổi
 
-  const visibleTasks = tasks.filter((t: any) => {
-    const q = search.trim().toLowerCase();
-    if (!q) return true;
-    const assignee = usersMap[String(t.assigneeId)] || "";
-    return (
-      String(t.taskName).toLowerCase().includes(q) ||
-      assignee.toLowerCase().includes(q)
-    );
-  });
+  // Lọc danh sách nhiệm vụ dựa trên từ khóa tìm kiếm
+  const visibleTasks = useMemo(() => {
+    return tasks.filter((task: Task) => {
+      const q = search.trim().toLowerCase(); // Chuyển từ khóa tìm kiếm về chữ thường
+      if (!q) return true; // Nếu không có từ khóa, hiện tất cả
 
-  const grouped = visibleTasks.reduce((acc: Record<string, Task[]>, t) => {
-    const s = t.status || "To do";
-    (acc[s] ||= []).push(t);
-    return acc;
-  }, {} as Record<string, Task[]>);
+      // Lấy tên người phụ trách từ usersMap
+      const assignee = usersMap[String(task.assigneeId)] || "";
+
+      // Tìm kiếm trong tên nhiệm vụ hoặc tên người phụ trách
+      return (
+        String(task.taskName).toLowerCase().includes(q) ||
+        assignee.toLowerCase().includes(q)
+      );
+    });
+  }, [tasks, search, usersMap]);
+
+  // Nhóm các nhiệm vụ theo trạng thái
+  const grouped = useMemo(() => {
+    return visibleTasks.reduce((acc: Record<string, Task[]>, task: Task) => {
+      const status = task.status || "To do"; // Nếu không có trạng thái, mặc định là "To do"
+      if (!acc[status]) acc[status] = [];
+      acc[status].push(task); // Thêm nhiệm vụ vào nhóm tương ứng
+      return acc;
+    }, {} as Record<string, Task[]>);
+  }, [visibleTasks]);
 
   function toggleStatus(s: string) {
     setExpandedStatuses((cur) => ({ ...cur, [s]: !cur[s] }));
@@ -193,37 +221,71 @@ const ManagermentDetail: React.FC = () => {
     },
   ];
 
-  const dataSource = Object.entries(grouped).flatMap(([status, items]) => {
-    const header = {
-      key: `header-${status}`,
-      categoryHeader: true,
-      taskName: (
-        <div
-          onClick={() => toggleStatus(status)}
-          style={{
-            fontWeight: 600,
-            cursor: "pointer",
-            background: "#fafafa",
-            padding: "8px 12px",
-          }}
-        >
-          {expandedStatuses[status] ? <DownOutlined /> : <RightOutlined />}{" "}
-          {status}
-        </div>
-      ),
-    };
-    return [header, ...(expandedStatuses[status] ? items : [])];
-  });
+  const dataSource = useMemo(() => {
+    return Object.entries(grouped).flatMap(([status, items]) => {
+      const header = {
+        key: `header-${status}`,
+        categoryHeader: true,
+        taskName: (
+          <div
+            onClick={() => toggleStatus(status)}
+            style={{
+              fontWeight: 600,
+              cursor: "pointer",
+              background: "#fafafa",
+              padding: "8px 12px",
+            }}
+          >
+            {expandedStatuses[status] ? <DownOutlined /> : <RightOutlined />}{" "}
+            {status}
+          </div>
+        ),
+      };
+      return [header, ...(expandedStatuses[status] ? items : [])];
+    });
+  }, [grouped, expandedStatuses]);
 
-  function handleSaveTask(_data: any) {
-    if (editingTask) message.success("Cập nhật nhiệm vụ (demo)");
-    else message.success("Tạo nhiệm vụ mới (demo)");
-    setOpenCreateEdit(false);
+  // Xử lý lưu task (thêm mới hoặc cập nhật)
+  async function handleSaveTask(data: Task) {
+    try {
+      if (editingTask) {
+        // Cập nhật task
+        await dispatch(
+          updateTask({
+            ...editingTask,
+            ...data,
+          })
+        ).unwrap();
+        message.success("Đã cập nhật nhiệm vụ thành công!");
+      } else {
+        // Thêm task mới
+        await dispatch(
+          addTask({
+            ...data,
+            projectId: Number(id),
+          })
+        ).unwrap();
+        message.success("Đã thêm nhiệm vụ mới thành công!");
+      }
+      setOpenCreateEdit(false);
+      setEditingTask(null);
+    } catch (error) {
+      message.error("Có lỗi xảy ra!");
+    }
   }
 
-  function handleConfirmDelete() {
-    if (taskToDelete) message.success("Đã xóa nhiệm vụ (demo)");
-    setOpenDelete(false);
+  // Xử lý xóa task
+  async function handleConfirmDelete() {
+    if (!taskToDelete) return;
+
+    try {
+      await dispatch(deleteTask(taskToDelete.id)).unwrap();
+      message.success("Đã xóa nhiệm vụ thành công!");
+      setOpenDelete(false);
+      setTaskToDelete(null);
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi xóa nhiệm vụ!");
+    }
   }
 
   return (
@@ -285,13 +347,24 @@ const ManagermentDetail: React.FC = () => {
               </div>
             </div>
             <div className="member-tool">
-              <select>
+              <select
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "Hạn chót") {
+                    // Sắp xếp theo hạn chót
+                    dispatch(sortByDueDate());
+                  } else if (value === "Độ ưu tiên") {
+                    // Sắp xếp theo độ ưu tiên
+                    dispatch(sortByPriority());
+                  }
+                }}
+              >
                 <option value="">Sắp xếp theo</option>
                 <option value="Hạn chót">Hạn chót</option>
                 <option value="Độ ưu tiên">Độ ưu tiên</option>
               </select>
-              <Search 
-                placeholder="Tìm kiếm nhiệm vụ theo tên"
+              <Search
+                placeholder="Tìm kiếm nhiệm vụ theo tên hoặc người phụ trách"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 allowClear
@@ -335,9 +408,27 @@ const ManagermentDetail: React.FC = () => {
         <ViewMemberModal
           isOpen={openViewMember}
           onClose={() => setOpenViewMember(false)}
-          onSave={() => {
-            message.success("Cập nhật vai trò (demo)");
-            setOpenViewMember(false);
+          onSave={async (updatedMember) => {
+            try {
+              await dispatch(
+                updateMemberRole({
+                  memberId: updatedMember.userId,
+                  role: updatedMember.role,
+                })
+              ).unwrap();
+              message.success("Đã cập nhật vai trò thành viên!");
+              setOpenViewMember(false);
+            } catch (error) {
+              message.error("Có lỗi khi cập nhật vai trò thành viên!");
+            }
+          }}
+          onDelete={async (memberId) => {
+            try {
+              await dispatch(removeMember(memberId)).unwrap();
+              message.success("Đã xóa thành viên khỏi dự án!");
+            } catch (error) {
+              message.error("Có lỗi khi xóa thành viên!");
+            }
           }}
           members={projectMembers}
         />
