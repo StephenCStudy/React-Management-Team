@@ -58,8 +58,9 @@ export default function ManagermentProject() {
   }, [dispatch]);
 
   // Lọc dự án dựa trên từ khóa tìm kiếm
-  const filteredProjects = projects.filter((project: Project) =>
-    project.projectName.toLowerCase().includes(searchText.toLowerCase())
+  const filteredProjects = projects.filter(
+    (project: Project) =>
+      project.projectName.toLowerCase().includes(searchText.toLowerCase()) // không phân biệt hoa thường
   );
 
   // Chuyển đổi dữ liệu dự án thành định dạng phù hợp cho bảng dự án
@@ -74,6 +75,13 @@ export default function ManagermentProject() {
 
   // Định nghĩa các cột cho bảng dự án
   const columns: ColumnType<ProjectTableItem>[] = [
+    // {
+    //   title: "STT",
+    //   key: "index",
+    //   align: "center" as AlignType,
+    //   width: 70,
+    //   render: (_: any, __: any, index: number) => index + 1, // cộng 1 vì index bắt đầu từ 0
+    // },
     {
       title: "ID",
       dataIndex: "id",
