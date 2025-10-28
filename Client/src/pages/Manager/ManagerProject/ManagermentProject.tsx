@@ -101,7 +101,7 @@ export default function ManagermentProject() {
           </Button>
           <Button
             className="btn-detail"
-            onClick={() => navigate(`/Manager/Detail/${record.id}`)}
+            onClick={() => navigate(`/Manager/Detail/${record.id}`)} 
           >
             Chi tiết
           </Button>
@@ -160,7 +160,7 @@ export default function ManagermentProject() {
               current: currentPage,
               pageSize: pageSize,
               total: dataSource.length,
-              pageSizeOptions: ["5", "9", "12", "15", "20"],
+              pageSizeOptions: [ "5", "7", "10", ],
               showSizeChanger: true,
               onChange: (page, size) => {
                 setCurrentPage(page);
@@ -206,9 +206,9 @@ export default function ManagermentProject() {
           }}
         >
           Bạn không có quyền truy cập do bạn là 
-          <b>{!user?.isAdmin ? " member" : " admin"}</b>
+          <b>{user?.isAdmin ? " admin" : " member"}</b>
         </div>
       )}
     </div>
-  );
+  );  
 }

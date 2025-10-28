@@ -103,7 +103,7 @@ export default function UserProject() {
       render: (status, record) =>
         !record.categoryHeader ? (
           <span
-            className={`status ${status?.toLowerCase().replace(/\s+/g, "-")}`} // replace: Thay thế khoảng trắng bằng dấu gạch ngang
+            className={`Allstatus ${status?.toLowerCase().replace(/\s+/g, "-")}`} // replace: Thay thế khoảng trắng bằng dấu gạch ngang
             style={{ color: "black" }}
           >
             <i

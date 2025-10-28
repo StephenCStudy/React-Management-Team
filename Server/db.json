@@ -48,15 +48,23 @@
       "id": "1",
       "projectName": "Website thương mại điện tử",
       "description": "Phát triển nền tảng bán hàng online đa kênh",
-      "image": "https://source.unsplash.com/600x400/?ecommerce",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "1",
-          "role": "Owner"
+          "role": "Project Owner"
         },
         {
           "userId": "2",
-          "role": "Frontend Developer"
+          "role": "Member"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
         }
       ]
     },
@@ -64,15 +72,19 @@
       "id": "2",
       "projectName": "Ứng dụng quản lý công việc nhóm",
       "description": "Hệ thống quản lý task và tiến độ nhóm",
-      "image": "https://source.unsplash.com/600x400/?teamwork",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "3",
-          "role": "Project Manager"
+          "role": "Project Owner"
         },
         {
           "userId": "4",
-          "role": "Backend Developer"
+          "role": "Member"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
         }
       ]
     },
@@ -80,15 +92,19 @@
       "id": "3",
       "projectName": "Hệ thống đặt vé xem phim",
       "description": "Trang web cho phép người dùng đặt vé online",
-      "image": "https://source.unsplash.com/600x400/?cinema",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "5",
-          "role": "UI Designer"
+          "role": "Project Owner"
         },
         {
           "userId": "2",
-          "role": "Frontend Developer"
+          "role": "Member"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
         }
       ]
     },
@@ -96,47 +112,67 @@
       "id": "4",
       "projectName": "Ứng dụng học trực tuyến",
       "description": "Nền tảng học tập cho sinh viên và giảng viên",
-      "image": "https://source.unsplash.com/600x400/?education",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "3",
-          "role": "Owner"
+          "role": "Project Owner"
         },
         {
           "userId": "1",
-          "role": "Fullstack Developer"
+          "role": "Member"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
         }
       ]
     },
     {
+      "id": "5",
       "projectName": "App quản lý tài chính cá nhân",
       "description": "Ứng dụng theo dõi thu chi và phân tích chi tiêu",
-      "image": "blob:http://localhost:5173/cc576c12-95d6-427c-9fdc-d48825cc616f",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "4",
-          "role": "Backend Developer"
+          "role": "Project Owner"
         },
         {
           "userId": "5",
-          "role": "Tester"
+          "role": "Member"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
         }
-      ],
-      "id": "5"
+      ]
     },
     {
       "id": "6",
       "projectName": "Website bán đồ nội thất",
       "description": "Cửa hàng trực tuyến chuyên bán nội thất hiện đại",
-      "image": "https://source.unsplash.com/600x400/?furniture",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "2",
-          "role": "Owner"
+          "role": "Project Owner"
         },
         {
           "userId": "3",
-          "role": "Frontend Developer"
+          "role": "Member"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
         }
       ]
     },
@@ -144,15 +180,19 @@
       "id": "7",
       "projectName": "Ứng dụng đặt đồ ăn nhanh",
       "description": "App đặt món và giao hàng nhanh trong thành phố",
-      "image": "https://source.unsplash.com/600x400/?food",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "1",
-          "role": "Owner"
+          "role": "Project Owner"
         },
         {
           "userId": "5",
-          "role": "UX Designer"
+          "role": "Member"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
         }
       ]
     },
@@ -160,11 +200,23 @@
       "id": "8",
       "projectName": "Trang tin tức công nghệ",
       "description": "Cập nhật tin tức và xu hướng công nghệ mới nhất",
-      "image": "https://source.unsplash.com/600x400/?technology",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "3",
-          "role": "Content Manager"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
         }
       ]
     },
@@ -172,15 +224,19 @@
       "id": "9",
       "projectName": "Ứng dụng thể thao & sức khỏe",
       "description": "Theo dõi sức khỏe, tập luyện, và chế độ dinh dưỡng",
-      "image": "https://source.unsplash.com/600x400/?fitness",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "2",
-          "role": "Owner"
+          "role": "Project Owner"
         },
         {
           "userId": "4",
-          "role": "Mobile Developer"
+          "role": "Member"
+        },
+        {
+          "userId": "5",
+          "role": "Member"
         }
       ]
     },
@@ -188,11 +244,19 @@
       "id": "10",
       "projectName": "Website du lịch Việt Nam",
       "description": "Khám phá và đặt tour du lịch trong nước",
-      "image": "https://source.unsplash.com/600x400/?travel",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "1",
-          "role": "Owner"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
         }
       ]
     },
@@ -200,11 +264,19 @@
       "id": "11",
       "projectName": "Ứng dụng quản lý sinh viên",
       "description": "Hệ thống theo dõi điểm và tiến độ học tập",
-      "image": "https://source.unsplash.com/600x400/?university",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "3",
-          "role": "Database Admin"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
+        },
+        {
+          "userId": "5",
+          "role": "Member"
         }
       ]
     },
@@ -212,11 +284,19 @@
       "id": "12",
       "projectName": "App chia sẻ công thức nấu ăn",
       "description": "Nền tảng chia sẻ và đánh giá công thức nấu ăn",
-      "image": "https://source.unsplash.com/600x400/?cooking",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "5",
-          "role": "Product Owner"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
         }
       ]
     },
@@ -224,11 +304,23 @@
       "id": "13",
       "projectName": "Ứng dụng học tiếng Anh",
       "description": "App học tiếng Anh qua hội thoại và trò chơi",
-      "image": "https://source.unsplash.com/600x400/?english",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "2",
-          "role": "Backend Developer"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
+        },
+        {
+          "userId": "5",
+          "role": "Member"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
         }
       ]
     },
@@ -236,11 +328,19 @@
       "id": "14",
       "projectName": "Trang portfolio cá nhân",
       "description": "Website giới thiệu bản thân và dự án cá nhân",
-      "image": "https://source.unsplash.com/600x400/?portfolio",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "4",
-          "role": "Owner"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
         }
       ]
     },
@@ -248,11 +348,19 @@
       "id": "15",
       "projectName": "Ứng dụng podcast",
       "description": "Nền tảng nghe và chia sẻ podcast",
-      "image": "https://source.unsplash.com/600x400/?podcast",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "1",
-          "role": "Frontend Developer"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "5",
+          "role": "Member"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
         }
       ]
     },
@@ -260,11 +368,19 @@
       "id": "16",
       "projectName": "App thương mại NFT",
       "description": "Sàn giao dịch và trưng bày tác phẩm NFT",
-      "image": "https://source.unsplash.com/600x400/?nft",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "3",
-          "role": "Blockchain Dev"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
         }
       ]
     },
@@ -272,11 +388,19 @@
       "id": "17",
       "projectName": "Ứng dụng bán vé sự kiện",
       "description": "Nền tảng quản lý và bán vé cho sự kiện",
-      "image": "https://source.unsplash.com/600x400/?event",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "4",
-          "role": "Frontend Developer"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
+        },
+        {
+          "userId": "5",
+          "role": "Member"
         }
       ]
     },
@@ -284,11 +408,19 @@
       "id": "18",
       "projectName": "Website tin tức thể thao",
       "description": "Trang cập nhật kết quả bóng đá & tin thể thao",
-      "image": "https://source.unsplash.com/600x400/?football",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "2",
-          "role": "Editor"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
+        },
+        {
+          "userId": "1",
+          "role": "Member"
         }
       ]
     },
@@ -296,11 +428,19 @@
       "id": "19",
       "projectName": "App đặt taxi",
       "description": "Ứng dụng gọi xe nội thành tiện lợi",
-      "image": "https://source.unsplash.com/600x400/?taxi",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "5",
-          "role": "Mobile Developer"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "4",
+          "role": "Member"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
         }
       ]
     },
@@ -308,11 +448,23 @@
       "id": "20",
       "projectName": "Ứng dụng thời tiết toàn cầu",
       "description": "Theo dõi dự báo thời tiết theo vị trí người dùng",
-      "image": "https://source.unsplash.com/600x400/?weather",
+      "image": "https://th.bing.com/th/id/OIP._rdHB9LTODxUDFgl5QlfBAHaFQ?w=255&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
       "members": [
         {
           "userId": "1",
-          "role": "Owner"
+          "role": "Project Owner"
+        },
+        {
+          "userId": "2",
+          "role": "Member"
+        },
+        {
+          "userId": "3",
+          "role": "Member"
+        },
+        {
+          "userId": "5",
+          "role": "Member"
         }
       ]
     }

@@ -22,7 +22,7 @@ export default function RouterSetup() {
             </ProtectedRoute>
           }
         >
-          <Route path="Detail" element={<ManagermentDetail />} />
+          <Route path="Detail/:id" element={<ManagermentDetail />} />
           <Route path="Project" element={<ManagermentProject />} />
           <Route path="User" element={<UserProject />} />
         </Route>

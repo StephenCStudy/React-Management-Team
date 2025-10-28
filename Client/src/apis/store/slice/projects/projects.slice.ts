@@ -66,7 +66,7 @@ export const updateProject = createAsyncThunk(
 // Tạo action bất đồng bộ để xóa project
 export const deleteProject = createAsyncThunk(
   "projects/deleteProject",
-  async (id: number) => {
+  async (id: string) => {
     await fetch(`http://localhost:3000/projects/${id}`, {
       method: "DELETE",
     });
@@ -97,22 +97,22 @@ const projectsSlice = createSlice({
 
     // Xử lý addProject
     builder.addCase(addProject.fulfilled, (state, action) => {
-      state.items.push(action.payload);
+      state.items.push(action.payload); // dùng push để thêm project mới vào mảng items
     });
 
     // Xử lý updateProject
     builder.addCase(updateProject.fulfilled, (state, action) => {
-      const index = state.items.findIndex(
+      const index = state.items.findIndex( // tìm project cần cập nhật theo id bằng action.payload.id
         (project) => project.id === action.payload.id
       );
-      if (index !== -1) {
+      if (index !== -1) { // nếu tìm thấy, cập nhật project đó
         state.items[index] = action.payload;
       }
     });
 
     // Xử lý deleteProject
     builder.addCase(deleteProject.fulfilled, (state, action) => {
-      state.items = state.items.filter(
+      state.items = state.items.filter(  // lọc bỏ project đã xóa, giử lại các project khác
         (project) => project.id !== action.payload
       );
     });
