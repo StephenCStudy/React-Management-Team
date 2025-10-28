@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 
 const { Search } = Input;
 
+ // Hàm lấy chữ cái đầu từ tên đầy đủ để hiển thị avatar member
 function getInitials(name: string) {
   if (!name) return "?";
   const parts = name.trim().split(" ").filter(Boolean);
@@ -29,33 +30,7 @@ function getInitials(name: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-/*
- * Component quản lý chi tiết dự án
- *
- * Chức năng chính:
- * 1. Hiển thị thông tin dự án và danh sách thành viên
- * 2. Quản lý nhiệm vụ:
- *    - Thêm mới nhiệm vụ với các ràng buộc:
- *      + Dữ liệu không được trống
- *      + Tên nhiệm vụ không trùng lặp
- *      + Tên nhiệm vụ từ 5-100 ký tự
- *      + Ngày bắt đầu > ngày hiện tại
- *      + Hạn chót > ngày bắt đầu
- *    - Sửa nhiệm vụ
- *    - Xóa nhiệm vụ
- * 3. Quản lý thành viên:
- *    - Thêm thành viên mới với các ràng buộc:
- *      + Email và vai trò không được trống
- *      + Email phải đúng định dạng
- *      + Email từ 5-50 ký tự
- *      + Người dùng chưa có trong dự án
- *    - Sửa vai trò thành viên
- *    - Xóa thành viên
- * 4. Tính năng bổ sung:
- *    - Sắp xếp nhiệm vụ theo hạn chót/độ ưu tiên
- *    - Tìm kiếm nhiệm vụ theo tên
- *    - Đóng/mở danh sách nhiệm vụ theo trạng thái
- */
+
 const ManagermentDetail: React.FC = () => {
   // Lấy ID dự án từ URL
   const { id } = useParams<{ id?: string }>();
@@ -199,10 +174,12 @@ const ManagermentDetail: React.FC = () => {
     }, {} as Record<string, Task[]>);
   }, [visibleTasks]);
 
+  // Hàm chuyển đổi trạng thái đóng/mở của nhóm nhiệm vụ theo trạng thái
   function toggleStatus(s: string) {
     setExpandedStatuses((cur) => ({ ...cur, [s]: !cur[s] }));
   }
 
+  // Định nghĩa các cột cho bảng nhiệm vụ
   const columns: ColumnsType<any> = [
     {
       title: "Tên Nhiệm Vụ",
@@ -413,7 +390,8 @@ const ManagermentDetail: React.FC = () => {
 
   return (
     <ConfigProvider getPopupContainer={() => document.body}>
-      <div className="managerDetail-container">
+      <div className="managerDetail-container"> 
+        {/* // Phần cài đặt công cụ và thông tin dự án */}
         <div className="tool-setting">
           <div className="title-section">
             <div className="title-box">
@@ -505,6 +483,7 @@ const ManagermentDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* // Phần bảng danh sách nhiệm vụ */}
         <div className="table">
           <p className="title-table">Danh Sách Nhiệm Vụ</p>
           <Table
@@ -519,6 +498,7 @@ const ManagermentDetail: React.FC = () => {
           />
         </div>
 
+        {/* // Modals cho tạo/sửa nhiệm vụ, xóa nhiệm vụ, quản lý thành viên */}
         <ModalCreateEdit
           open={openCreateEdit}
           onCancel={() => {
@@ -532,11 +512,15 @@ const ManagermentDetail: React.FC = () => {
             name: member.name,
           }))}
         />
+
+        {/* // Modal xác nhận xóa nhiệm vụ */}
         <ModalDelete
           open={openDelete}
           onCancel={() => setOpenDelete(false)}
           onConfirm={handleConfirmDelete}
         />
+
+        {/* // Modal thêm thành viên ban đầu */}
         <InitMemberModal
           isOpen={openInitMember}
           onClose={() => {
@@ -595,6 +579,8 @@ const ManagermentDetail: React.FC = () => {
             }
           }}
         />
+
+        {/* // Modal xem và quản lý thành viên */}
         <ViewMemberModal
           isOpen={openViewMember}
           onClose={() => setOpenViewMember(false)}

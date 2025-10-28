@@ -17,11 +17,24 @@ interface AuthState {
   token: string | null; // token đăng nhập
 }
 
+// Hàm lấy user từ localStorage (dùng khi F5 trang)
+const getUserFromStorage = () => {
+  const userStr = localStorage.getItem("user");
+  if (userStr) {
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+};
+
 // Trạng thái mặc định ban đầu
 const initialState: AuthState = {
   loading: false,
   error: null,
-  user: null,
+  user: getUserFromStorage(), // Lấy user từ localStorage khi khởi tạo
   token: localStorage.getItem("token") || null, // Nếu đã có token từ lần trước thì giữ lại
 };
 
@@ -50,7 +63,7 @@ export const loginUser = createAsyncThunk(
         throw new Error("Sai mật khẩu");
       }
 
-      // Giả lập token 
+      // Giả lập token
       const fakeToken = `${user.isAdmin}_${user.id}_${Date.now()}`;
 
       // Lưu vào localStorage để giữ trạng thái đăng nhập
@@ -79,6 +92,15 @@ const loginSlice = createSlice({
       localStorage.removeItem("user");
       message.info("Đã đăng xuất");
     },
+    // Action để load lại user từ localStorage (dùng khi cần refresh state)
+    loadUserFromStorage: (state) => {
+      const user = getUserFromStorage();
+      const token = localStorage.getItem("token");
+      if (user && token) {
+        state.user = user;
+        state.token = token;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -98,5 +120,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { logout } = loginSlice.actions;
+export const { logout, loadUserFromStorage } = loginSlice.actions;
 export default loginSlice.reducer;
