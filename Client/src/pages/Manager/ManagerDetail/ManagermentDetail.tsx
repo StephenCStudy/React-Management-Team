@@ -15,11 +15,10 @@ import {
   addTask,
   updateTask,
   deleteTask,
-  updateMemberRole,
-  removeMember,
   sortByDueDate,
   sortByPriority,
 } from "../../../apis/store/slice/projects/managerDetail.slice";
+import dayjs from "dayjs";
 
 const { Search } = Input;
 
@@ -30,7 +29,33 @@ function getInitials(name: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Component chính quản lý chi tiết dự án
+/*
+ * Component quản lý chi tiết dự án
+ *
+ * Chức năng chính:
+ * 1. Hiển thị thông tin dự án và danh sách thành viên
+ * 2. Quản lý nhiệm vụ:
+ *    - Thêm mới nhiệm vụ với các ràng buộc:
+ *      + Dữ liệu không được trống
+ *      + Tên nhiệm vụ không trùng lặp
+ *      + Tên nhiệm vụ từ 5-100 ký tự
+ *      + Ngày bắt đầu > ngày hiện tại
+ *      + Hạn chót > ngày bắt đầu
+ *    - Sửa nhiệm vụ
+ *    - Xóa nhiệm vụ
+ * 3. Quản lý thành viên:
+ *    - Thêm thành viên mới với các ràng buộc:
+ *      + Email và vai trò không được trống
+ *      + Email phải đúng định dạng
+ *      + Email từ 5-50 ký tự
+ *      + Người dùng chưa có trong dự án
+ *    - Sửa vai trò thành viên
+ *    - Xóa thành viên
+ * 4. Tính năng bổ sung:
+ *    - Sắp xếp nhiệm vụ theo hạn chót/độ ưu tiên
+ *    - Tìm kiếm nhiệm vụ theo tên
+ *    - Đóng/mở danh sách nhiệm vụ theo trạng thái
+ */
 const ManagermentDetail: React.FC = () => {
   // Lấy ID dự án từ URL
   const { id } = useParams<{ id?: string }>();
@@ -39,9 +64,7 @@ const ManagermentDetail: React.FC = () => {
   const dispatch = useAppDispatch();
 
   // Lấy state từ Redux store thông qua useSelector
-  const { project, tasks, loading } = useAppSelector(
-    (state) => state.managerDetail
-  );
+  const { project, tasks } = useAppSelector((state) => state.managerDetail);
 
   const [openCreateEdit, setOpenCreateEdit] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -55,6 +78,50 @@ const ManagermentDetail: React.FC = () => {
 
   const [usersMap, setUsersMap] = useState<Record<string, string>>({});
   const [search, setSearch] = useState("");
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+
+  // Kiểm tra tính hợp lệ của thành viên
+  const validateMember = (
+    email: string,
+    role: string
+  ): { isValid: boolean; error?: string } => {
+    // Kiểm tra email không được trống
+    if (!email?.trim()) {
+      return { isValid: false, error: "Email không được để trống" };
+    }
+
+    // Kiểm tra độ dài email (từ 5 đến 50 ký tự)
+    if (email.length < 5 || email.length > 50) {
+      return { isValid: false, error: "Email phải từ 5 đến 50 ký tự" };
+    }
+
+    // Kiểm tra định dạng email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { isValid: false, error: "Email không đúng định dạng" };
+    }
+
+    // Kiểm tra email có tồn tại trong hệ thống không
+    const userExists = allUsers.some((u) => u.email === email);
+    if (!userExists) {
+      return { isValid: false, error: "Email không tồn tại trong hệ thống" };
+    }
+
+    // Kiểm tra người dùng đã tồn tại trong dự án chưa
+    const isExistingMember = project?.members?.some(
+      (member) => allUsers.find((u) => u.email === email)?.id === member.userId
+    );
+    if (isExistingMember) {
+      return { isValid: false, error: "Email này đã là thành viên của dự án" };
+    }
+
+    // Kiểm tra vai trò không được trống và phải là một trong hai giá trị cho phép
+    if (!role?.trim() || !["Project Owner", "member"].includes(role)) {
+      return { isValid: false, error: "Vai trò không hợp lệ" };
+    }
+
+    return { isValid: true };
+  };
 
   // Gọi API để lấy dữ liệu dự án khi component được tải
   useEffect(() => {
@@ -69,11 +136,16 @@ const ManagermentDetail: React.FC = () => {
   // Hàm tải danh sách người dùng
   const loadUsers = async () => {
     try {
+      // Gọi API để lấy danh sách người dùng
       const userRes = await fetch(`http://localhost:3000/users`);
       const userJson = userRes.ok ? await userRes.json() : [];
 
+      // Lưu trữ danh sách người dùng đầy đủ
+      setAllUsers(userJson || []);
+
+      // Tạo map cho việc hiển thị tên người dùng
       const map: Record<string, string> = {};
-      (userJson || []).forEach((u: any) => {
+      userJson.forEach((u: any) => {
         map[u.id] = u.fullName || u.displayName || u.email || String(u.id);
       });
       setUsersMap(map);
@@ -245,9 +317,59 @@ const ManagermentDetail: React.FC = () => {
     });
   }, [grouped, expandedStatuses]);
 
+  // Kiểm tra tính hợp lệ của nhiệm vụ
+  const validateTask = (
+    taskData: Task
+  ): { isValid: boolean; error?: string } => {
+    // Kiểm tra dữ liệu không được trống
+    if (!taskData.taskName?.trim()) {
+      return { isValid: false, error: "Tên nhiệm vụ không được để trống" };
+    }
+
+    // Kiểm tra độ dài tên nhiệm vụ (từ 5 đến 100 ký tự)
+    if (taskData.taskName.length < 5 || taskData.taskName.length > 100) {
+      return { isValid: false, error: "Tên nhiệm vụ phải từ 5 đến 100 ký tự" };
+    }
+
+    // Kiểm tra tên nhiệm vụ có bị trùng không
+    const isDuplicateName = tasks.some(
+      (task) =>
+        task.taskName.toLowerCase() === taskData.taskName.toLowerCase() &&
+        task.id !== taskData.id
+    );
+    if (isDuplicateName) {
+      return { isValid: false, error: "Tên nhiệm vụ đã tồn tại trong dự án" };
+    }
+
+    // Kiểm tra ngày bắt đầu phải lớn hơn ngày hiện tại
+    const today = dayjs().startOf("day");
+    const assignDate = dayjs(taskData.assignDate);
+    if (assignDate.isBefore(today)) {
+      return {
+        isValid: false,
+        error: "Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại",
+      };
+    }
+
+    // Kiểm tra hạn chót phải lớn hơn ngày bắt đầu
+    const dueDate = dayjs(taskData.dueDate);
+    if (dueDate.isBefore(assignDate)) {
+      return { isValid: false, error: "Hạn chót phải lớn hơn ngày bắt đầu" };
+    }
+
+    return { isValid: true };
+  };
+
   // Xử lý lưu task (thêm mới hoặc cập nhật)
   async function handleSaveTask(data: Task) {
     try {
+      // Kiểm tra tính hợp lệ của dữ liệu
+      const validation = validateTask(data);
+      if (!validation.isValid) {
+        message.error(validation.error);
+        return;
+      }
+
       if (editingTask) {
         // Cập nhật task
         await dispatch(
@@ -270,7 +392,8 @@ const ManagermentDetail: React.FC = () => {
       setOpenCreateEdit(false);
       setEditingTask(null);
     } catch (error) {
-      message.error("Có lỗi xảy ra!");
+      message.error("Có lỗi xảy ra khi lưu nhiệm vụ!");
+      console.error("Lỗi:", error);
     }
   }
 
@@ -330,18 +453,27 @@ const ManagermentDetail: React.FC = () => {
               </button>
             </div>
             <div className="member-body">
-              {projectMembers.map((m: any) => (
-                <div className="img-user" key={m.id}>
+              {/* Hiển thị tối đa 2 thành viên */}
+              {projectMembers.slice(0, 2).map((m) => (
+                <div className="img-user" key={m.userId}>
                   <div className="avatar">{m.avatarLabel}</div>
                   <div className="info">
                     <p className="name">{m.name}</p>
-                    <p className="role">{m.role}</p>
+                    <p className="role">
+                      {m.role === "Project Owner" ? "Chủ dự án" : "Thành viên"}
+                    </p>
                   </div>
                 </div>
               ))}
+              {/* Icon mở modal quản lý thành viên */}
               <div
                 className="body-icon"
                 onClick={() => setOpenViewMember(true)}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                }}
               >
                 <i className="fa-solid fa-ellipsis-h"></i>
               </div>
@@ -399,10 +531,60 @@ const ManagermentDetail: React.FC = () => {
         />
         <InitMemberModal
           isOpen={openInitMember}
-          onClose={() => setOpenInitMember(false)}
-          onSave={(v) => {
-            console.log("Thêm thành viên:", v);
+          onClose={() => {
             setOpenInitMember(false);
+          }}
+          onSave={async (values, form) => {
+            // Kiểm tra tính hợp lệ của thông tin thành viên
+            const validation = validateMember(values.email, values.role);
+            if (!validation.isValid) {
+              message.error(validation.error);
+              return false;
+            }
+
+            try {
+              // Tìm user dựa trên email
+              const user = allUsers.find((u) => u.email === values.email);
+              if (!user) {
+                message.error("Không tìm thấy người dùng với email này");
+                return false;
+              }
+
+              // Thêm thành viên vào dự án
+              const newMember = {
+                userId: user.id,
+                role: values.role,
+              };
+
+              // Cập nhật project
+              const response = await fetch(
+                `http://localhost:3000/projects/${id}`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    members: [...(project?.members || []), newMember],
+                  }),
+                }
+              );
+
+              if (response.ok) {
+                message.success("Đã thêm thành viên mới thành công!");
+                // Cập nhật lại dữ liệu dự án
+                dispatch(fetchProjectDetails(id!));
+                // Reset form
+                form.resetFields();
+                return true;
+              } else {
+                throw new Error("Lỗi khi thêm thành viên");
+              }
+            } catch (error) {
+              console.error("Lỗi khi thêm thành viên:", error);
+              message.error("Có lỗi xảy ra khi thêm thành viên");
+              return false;
+            }
           }}
         />
         <ViewMemberModal
@@ -410,23 +592,96 @@ const ManagermentDetail: React.FC = () => {
           onClose={() => setOpenViewMember(false)}
           onSave={async (updatedMember) => {
             try {
-              await dispatch(
-                updateMemberRole({
-                  memberId: updatedMember.userId,
-                  role: updatedMember.role,
-                })
-              ).unwrap();
-              message.success("Đã cập nhật vai trò thành viên!");
-              setOpenViewMember(false);
+              // Kiểm tra xem có phải owner duy nhất không
+              if (updatedMember.role !== "Project Owner") {
+                const ownerCount =
+                  project?.members?.filter(
+                    (m) =>
+                      m.role === "Project Owner" &&
+                      m.userId !== updatedMember.userId
+                  ).length || 0;
+                if (ownerCount === 0) {
+                  message.error(
+                    "Không thể thay đổi vai trò: phải có ít nhất một owner trong dự án!"
+                  );
+                  return;
+                }
+              }
+
+              // Cập nhật vai trò thành viên trong dự án
+              const updatedMembers = project?.members?.map((m) =>
+                m.userId === updatedMember.userId
+                  ? { ...m, role: updatedMember.role }
+                  : m
+              );
+
+              const response = await fetch(
+                `http://localhost:3000/projects/${id}`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    members: updatedMembers,
+                  }),
+                }
+              );
+
+              if (response.ok) {
+                message.success("Đã cập nhật vai trò thành viên thành công!");
+                dispatch(fetchProjectDetails(id!));
+                setOpenViewMember(false);
+              } else {
+                throw new Error("Lỗi khi cập nhật vai trò thành viên");
+              }
             } catch (error) {
+              console.error("Lỗi khi cập nhật vai trò thành viên:", error);
               message.error("Có lỗi khi cập nhật vai trò thành viên!");
             }
           }}
           onDelete={async (memberId) => {
             try {
-              await dispatch(removeMember(memberId)).unwrap();
-              message.success("Đã xóa thành viên khỏi dự án!");
+              // Kiểm tra xem có phải owner duy nhất không
+              const member = project?.members?.find(
+                (m) => m.userId === memberId
+              );
+              if (member?.role === "Project Owner") {
+                const ownerCount =
+                  project?.members?.filter((m) => m.role === "Project Owner")
+                    .length || 0;
+                if (ownerCount <= 1) {
+                  message.error("Không thể xóa owner duy nhất của dự án!");
+                  return;
+                }
+              }
+
+              // Xóa thành viên khỏi dự án
+              const updatedMembers = project?.members?.filter(
+                (m) => m.userId !== memberId
+              );
+
+              const response = await fetch(
+                `http://localhost:3000/projects/${id}`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    members: updatedMembers,
+                  }),
+                }
+              );
+
+              if (response.ok) {
+                message.success("Đã xóa thành viên khỏi dự án thành công!");
+                dispatch(fetchProjectDetails(id!));
+              } else {
+                throw new Error("Lỗi khi xóa thành viên");
+              }
             } catch (error) {
+              console.error("Lỗi khi xóa thành viên:", error);
               message.error("Có lỗi khi xóa thành viên!");
             }
           }}

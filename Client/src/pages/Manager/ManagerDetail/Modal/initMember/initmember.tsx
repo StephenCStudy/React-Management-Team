@@ -1,8 +1,8 @@
 // InitMemberModal.tsx
 
-import React from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
-import './initmember.scss'; // Import file SCSS
+import React, { useState } from "react";
+import { Modal, Form, Input, Select, message } from "antd";
+import "./initmember.scss"; // Import file SCSS
 
 const { Option } = Select;
 
@@ -20,7 +20,7 @@ interface AddMemberFormValues {
 interface InitMemberModalProps {
   isOpen: boolean; // Trạng thái đóng/mở của modal
   onClose: () => void; // Hàm gọi khi nhấn "Hủy" hoặc nút X
-  onSave: (values: AddMemberFormValues) => void; // Hàm gọi khi nhấn "Lưu"
+  onSave: (values: AddMemberFormValues, form: any) => Promise<boolean>; // Hàm gọi khi nhấn "Lưu"
   isLoading?: boolean; // (Optional) Trạng thái loading cho nút "Lưu"
 }
 
@@ -32,29 +32,33 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
 }) => {
   // Sử dụng Antd Form hook
   const [form] = Form.useForm<AddMemberFormValues>();
+  const [saving, setSaving] = useState(false);
 
   /**
    * Xử lý khi nhấn nút "Lưu" (OK)
    * Form sẽ validate, nếu thành công thì gọi onSave
    */
-  const handleOk = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        // Gửi dữ liệu form về cho component cha qua prop onSave
-        onSave(values);
-        // Lưu ý: Việc đóng modal (gọi onClose) nên được xử lý
-        // ở component cha sau khi onSave thực thi thành công (ví dụ: sau khi API call xong)
-      })
-      .catch((info) => {
-        message.warning('Validate Failed:', info);
-      });
+  const handleOk = async () => {
+    try {
+      setSaving(true);
+      const values = await form.validateFields();
+      const success = await onSave(values, form);
+      if (success) {
+        onClose();
+      }
+    } catch (info) {
+      console.error("Validate Failed:", info);
+      message.warning("Vui lòng kiểm tra lại thông tin!");
+    } finally {
+      setSaving(false);
+    }
   };
 
   /**
    * Xử lý khi nhấn "Hủy" hoặc nút X
    */
   const handleCancel = () => {
+    form.resetFields();
     onClose();
   };
 
@@ -66,7 +70,7 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
       onCancel={handleCancel} // Gắn hàm xử lý "Hủy"
       okText="Lưu"
       cancelText="Hủy"
-      confirmLoading={isLoading} // Hiển thị loading trên nút "Lưu"
+      confirmLoading={saving || isLoading} // Hiển thị loading trên nút "Lưu"
       className="init-member-modal" // Class để custom SCSS
       destroyOnClose // Tự động reset form và các state con khi modal đóng
     >
@@ -75,7 +79,7 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
         layout="vertical"
         name="add_member_form"
         // Giá trị mặc định cho form, ví dụ "Thành viên"
-        initialValues={{ role: 'member' }}
+        initialValues={{ role: "member" }}
       >
         <Form.Item
           name="email"
@@ -83,11 +87,11 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
           rules={[
             {
               required: true,
-              message: 'Vui lòng nhập email!',
+              message: "Vui lòng nhập email!",
             },
             {
-              type: 'email',
-              message: 'Email không đúng định dạng!',
+              type: "email",
+              message: "Email không đúng định dạng!",
             },
           ]}
         >
@@ -100,14 +104,12 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
           rules={[
             {
               required: true,
-              message: 'Vui lòng chọn vai trò!',
+              message: "Vui lòng chọn vai trò!",
             },
           ]}
         >
           <Select placeholder="Chọn vai trò">
             <Option value="project-owner">project-owner</Option>
-            <Option value="frontend-dev">frontend-dev</Option>
-            <Option value="backend-dev">backend-dev</Option>
             <Option value="member">Member</Option>
             {/* Thêm các vai trò khác nếu cần */}
           </Select>

@@ -1,5 +1,5 @@
 // Định nghĩa role cho member
-export type MemberRole = "owner" | "admin" | "member";
+export type MemberRole = "Project Owner" | "member";
 
 // Interface cho thành viên trong dự án
 export interface Member {
