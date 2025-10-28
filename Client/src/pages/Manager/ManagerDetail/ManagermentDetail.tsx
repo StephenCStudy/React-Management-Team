@@ -384,7 +384,7 @@ const ManagermentDetail: React.FC = () => {
         await dispatch(
           addTask({
             ...data,
-            projectId: Number(id),
+            projectId: String(id),
           })
         ).unwrap();
         message.success("Đã thêm nhiệm vụ mới thành công!");
@@ -521,8 +521,16 @@ const ManagermentDetail: React.FC = () => {
 
         <ModalCreateEdit
           open={openCreateEdit}
-          onCancel={() => setOpenCreateEdit(false)}
+          onCancel={() => {
+            setOpenCreateEdit(false);
+            setEditingTask(null);
+          }}
           onOk={handleSaveTask}
+          editingTask={editingTask}
+          projectMembers={projectMembers.map((member) => ({
+            userId: member.userId,
+            name: member.name,
+          }))}
         />
         <ModalDelete
           open={openDelete}

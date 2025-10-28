@@ -79,7 +79,7 @@ export const updateTask = createAsyncThunk(
 // Xóa nhiệm vụ
 export const deleteTask = createAsyncThunk(
   "managerDetail/deleteTask",
-  async (taskId: number) => {
+  async (taskId: string) => {
     await fetch(`http://localhost:3000/taskData/${taskId}`, {
       method: "DELETE",
     });

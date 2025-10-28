@@ -11,10 +11,11 @@ export interface Member {
 
 // Interface cho nhiệm vụ trong dự án
 export interface Task {
-  id: number;
+  id: string; // Changed to string to match API
+  key?: string; // Added to match API
   taskName: string;
-  assigneeId: number;
-  projectId: number;
+  assigneeId: string; // Changed to string to match API
+  projectId: string; // Changed to string to match API
   assignDate: string;
   dueDate: string;
   priority: "Thấp" | "Trung bình" | "Cao";
