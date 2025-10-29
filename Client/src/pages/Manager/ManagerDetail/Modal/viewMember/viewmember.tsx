@@ -111,7 +111,7 @@ const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
         <div
           style={{
             display: "flex",
-            gap: "350px",
+            gap: "300px",
             padding: "0 10px",
           }}
         >

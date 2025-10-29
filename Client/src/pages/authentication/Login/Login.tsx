@@ -67,22 +67,14 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // 1️⃣ Kiểm tra form hợp lệ
+    // 1️ Kiểm tra form hợp lệ
     if (!validate()) return;
 
-    // 2️⃣ Giả lập delay 0.5 giây để mô phỏng quá trình xử lý / gọi API
+    // 2️ Giả lập delay 0.5 giây để mô phỏng quá trình xử lý / gọi API
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // 3️⃣ Gọi thunk loginUser để xác thực người dùng
-    const result = await dispatch(loginUser(formData));
-
-    // 4️⃣ Kiểm tra kết quả đăng nhập
-    console.log("Login Result:", result);
-    console.log(
-      "Current Token in Redux:",
-      useAppSelector((state) => state.auth.token)
-    );
-    console.log("Token in localStorage:", localStorage.getItem("token"));
+    // 3️ Gọi thunk loginUser để xác thực người dùng
+    await dispatch(loginUser(formData));
   };
 
   // -----------------------------

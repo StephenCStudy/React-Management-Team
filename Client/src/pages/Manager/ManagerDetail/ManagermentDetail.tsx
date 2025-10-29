@@ -10,11 +10,7 @@ import ViewMemberModal from "./Modal/viewMember/viewmember";
 import type { Task } from "../../../interfaces/manager/mamagerDetail/managerDetail";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../apis/store/hooks";
-import {
-  fetchProjectDetails,
-  sortByDueDate,
-  sortByPriority,
-} from "../../../apis/store/slice/projects/managerDetail.slice";
+import { fetchProjectDetails } from "../../../apis/store/slice/projects/managerDetail.slice";
 import { useProjectMembers } from "../../../hooks/useProjectMembers";
 import { useTaskHandlers } from "../../../hooks/useTaskHandlers";
 
@@ -48,10 +44,12 @@ const ManagermentDetail: React.FC = () => {
   const [expandedStatuses, setExpandedStatuses] = useState<
     Record<string, boolean>
   >({ "To do": true });
-
   const [usersMap, setUsersMap] = useState<Record<string, string>>({}); // Map userId -> userName để hiển thị tên người dùng
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState<any[]>([]); // Danh sách tất cả người dùng trong hệ thống
+  // State cho sorting
+  type SortKey = "none" | "dueDate" | "priority";
+  const [sortKey, setSortKey] = useState<SortKey>("none");
 
   // Gọi API để lấy dữ liệu dự án khi component được tải
   useEffect(() => {
@@ -102,22 +100,45 @@ const ManagermentDetail: React.FC = () => {
     }));
   }, [project, usersMap]); // Tính toán lại khi project hoặc usersMap thay đổi
 
-  // Lọc danh sách nhiệm vụ dựa trên từ khóa tìm kiếm
+  // Lọc và sắp xếp danh sách nhiệm vụ dựa trên từ khóa tìm kiếm và sortKey
   const visibleTasks = useMemo(() => {
-    return tasks.filter((task: Task) => {
-      const q = search.trim().toLowerCase(); // Chuyển từ khóa tìm kiếm về chữ thường
-      if (!q) return true; // Nếu không có từ khóa, hiện tất cả
-
-      // Lấy tên người phụ trách từ usersMap
+    let filtered = tasks.filter((task: Task) => {
+      const q = search.trim().toLowerCase();
+      if (!q) return true;
       const assignee = usersMap[String(task.assigneeId)] || "";
-
-      // Tìm kiếm trong tên nhiệm vụ hoặc tên người phụ trách
       return (
         String(task.taskName).toLowerCase().includes(q) ||
         assignee.toLowerCase().includes(q)
       );
     });
-  }, [tasks, search, usersMap]);
+    // Sắp xếp nếu có sortKey
+    if (sortKey === "dueDate") {
+      filtered = [...filtered].sort((a, b) => {
+        const da = new Date(a.dueDate).getTime();
+        const db = new Date(b.dueDate).getTime();
+        if (da !== db) return da - db;
+        // Tie-breaker: ưu tiên
+        const priorityOrder = { Cao: 3, "Trung bình": 2, Thấp: 1 };
+        const wa = priorityOrder[a.priority] ?? 0;
+        const wb = priorityOrder[b.priority] ?? 0;
+        if (wa !== wb) return wb - wa;
+        return a.taskName.localeCompare(b.taskName, "vi");
+      });
+    } else if (sortKey === "priority") {
+      const priorityOrder = { Cao: 3, "Trung bình": 2, Thấp: 1 };
+      filtered = [...filtered].sort((a, b) => {
+        const wa = priorityOrder[a.priority] ?? 0;
+        const wb = priorityOrder[b.priority] ?? 0;
+        if (wa !== wb) return wb - wa;
+        // Tie-breaker: hạn chót
+        const da = new Date(a.dueDate).getTime();
+        const db = new Date(b.dueDate).getTime();
+        if (da !== db) return da - db;
+        return a.taskName.localeCompare(b.taskName, "vi");
+      });
+    }
+    return filtered;
+  }, [tasks, search, usersMap, sortKey]);
 
   // Nhóm các nhiệm vụ theo trạng thái
   const grouped = useMemo(() => {
@@ -336,20 +357,14 @@ const ManagermentDetail: React.FC = () => {
             </div>
             <div className="member-tool">
               <select
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "Hạn chót") {
-                    // Sắp xếp theo hạn chót
-                    dispatch(sortByDueDate());
-                  } else if (value === "Độ ưu tiên") {
-                    // Sắp xếp theo độ ưu tiên
-                    dispatch(sortByPriority());
-                  }
-                }}
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+                style={{ padding: "6px 8px" }}
+                aria-label="Chọn tiêu chí sắp xếp"
               >
-                <option value="">Sắp xếp theo</option>
-                <option value="Hạn chót">Hạn chót</option>
-                <option value="Độ ưu tiên">Độ ưu tiên</option>
+                <option value="none">Sắp xếp: Mặc định</option>
+                <option value="dueDate">Sắp xếp theo hạn chót</option>
+                <option value="priority">Sắp xếp theo độ ưu tiên</option>
               </select>
               <Search
                 placeholder="Tìm kiếm nhiệm vụ theo tên hoặc người phụ trách"
