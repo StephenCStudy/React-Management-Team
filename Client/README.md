@@ -306,7 +306,6 @@ Base URL: `http://localhost:3000`
 
 ![User Projects](docs/screenshots/user-projects.png)
 
-_(Lưu ý: Tạo folder `docs/screenshots/` và thêm ảnh màn hình thực tế)_
 
 ---
 

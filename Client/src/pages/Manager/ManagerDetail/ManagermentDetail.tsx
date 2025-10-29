@@ -22,14 +22,13 @@ import dayjs from "dayjs";
 
 const { Search } = Input;
 
- // Hàm lấy chữ cái đầu từ tên đầy đủ để hiển thị avatar member
+// Hàm lấy chữ cái đầu từ tên đầy đủ để hiển thị avatar member
 function getInitials(name: string) {
   if (!name) return "?";
   const parts = name.trim().split(" ").filter(Boolean);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
-
 
 const ManagermentDetail: React.FC = () => {
   // Lấy ID dự án từ URL
@@ -39,8 +38,9 @@ const ManagermentDetail: React.FC = () => {
   const dispatch = useAppDispatch();
 
   // Lấy state từ Redux store thông qua useSelector
-  const { project, tasks } = useAppSelector((state) => state.managerDetail);
+  const { project, tasks } = useAppSelector((state) => state.managerDetail); // dùng state từ managerDetail slice để lấy dữ liệu dự án và nhiệm vụ
 
+  // Các state quản lý modal và trạng thái giao diện
   const [openCreateEdit, setOpenCreateEdit] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [openDelete, setOpenDelete] = useState(false);
@@ -51,52 +51,12 @@ const ManagermentDetail: React.FC = () => {
     Record<string, boolean>
   >({ "To do": true });
 
-  const [usersMap, setUsersMap] = useState<Record<string, string>>({});
+  const [usersMap, setUsersMap] = useState<Record<string, string>>({}); // Map userId -> userName để hiển thị tên người dùng
   const [search, setSearch] = useState("");
-  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]); // Danh sách tất cả người dùng trong hệ thống
 
-  // Kiểm tra tính hợp lệ của thành viên
-  const validateMember = (
-    email: string,
-    role: string
-  ): { isValid: boolean; error?: string } => {
-    // Kiểm tra email không được trống
-    if (!email?.trim()) {
-      return { isValid: false, error: "Email không được để trống" };
-    }
-
-    // Kiểm tra độ dài email (từ 5 đến 50 ký tự)
-    if (email.length < 5 || email.length > 50) {
-      return { isValid: false, error: "Email phải từ 5 đến 50 ký tự" };
-    }
-
-    // Kiểm tra định dạng email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return { isValid: false, error: "Email không đúng định dạng" };
-    }
-
-    // Kiểm tra email có tồn tại trong hệ thống không
-    const userExists = allUsers.some((u) => u.email === email);
-    if (!userExists) {
-      return { isValid: false, error: "Email không tồn tại trong hệ thống" };
-    }
-
-    // Kiểm tra người dùng đã tồn tại trong dự án chưa
-    const isExistingMember = project?.members?.some(
-      (member) => allUsers.find((u) => u.email === email)?.id === member.userId
-    );
-    if (isExistingMember) {
-      return { isValid: false, error: "Email này đã là thành viên của dự án" };
-    }
-
-    // Kiểm tra vai trò không được trống và phải là một trong hai giá trị cho phép
-    if (!role?.trim() || !["Project Owner", "member"].includes(role)) {
-      return { isValid: false, error: "Vai trò không hợp lệ" };
-    }
-
-    return { isValid: true };
-  };
+  // Logic validation đã được chuyển vào modal InitMemberModal
+  // Modal sẽ tự kiểm tra: email tồn tại, member trùng, và Project Owner duy nhất
 
   // Gọi API để lấy dữ liệu dự án khi component được tải
   useEffect(() => {
@@ -353,6 +313,8 @@ const ManagermentDetail: React.FC = () => {
           updateTask({
             ...editingTask,
             ...data,
+            assigneeId: String(data.assigneeId),
+            projectId: String(id),
           })
         ).unwrap();
         message.success("Đã cập nhật nhiệm vụ thành công!");
@@ -361,6 +323,7 @@ const ManagermentDetail: React.FC = () => {
         await dispatch(
           addTask({
             ...data,
+            assigneeId: String(data.assigneeId),
             projectId: String(id),
           })
         ).unwrap();
@@ -390,7 +353,7 @@ const ManagermentDetail: React.FC = () => {
 
   return (
     <ConfigProvider getPopupContainer={() => document.body}>
-      <div className="managerDetail-container"> 
+      <div className="managerDetail-container">
         {/* // Phần cài đặt công cụ và thông tin dự án */}
         <div className="tool-setting">
           <div className="title-section">
@@ -527,13 +490,8 @@ const ManagermentDetail: React.FC = () => {
             setOpenInitMember(false);
           }}
           onSave={async (values, form) => {
-            // Kiểm tra tính hợp lệ của thông tin thành viên
-            const validation = validateMember(values.email, values.role);
-            if (!validation.isValid) {
-              message.error(validation.error);
-              return false;
-            }
-
+            // Validation đã được thực hiện trong modal
+            // Chỉ cần xử lý logic thêm thành viên vào dự án
             try {
               // Tìm user dựa trên email
               const user = allUsers.find((u) => u.email === values.email);

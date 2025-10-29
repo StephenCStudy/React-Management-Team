@@ -50,12 +50,19 @@ export const fetchProjectDetails = createAsyncThunk(
 export const addTask = createAsyncThunk(
   "managerDetail/addTask",
   async (task: Omit<Task, "id">) => {
+    // Đảm bảo assigneeId, projectId là chuỗi và có key
+    const fixedTask = {
+      ...task,
+      assigneeId: String(task.assigneeId),
+      projectId: String(task.projectId),
+      key: task.key || Date.now().toString(),
+    };
     const response = await fetch("http://localhost:3000/taskData", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(task),
+      body: JSON.stringify(fixedTask),
     });
     return response.json();
   }

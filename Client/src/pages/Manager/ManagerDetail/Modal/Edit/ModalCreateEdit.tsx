@@ -28,6 +28,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditTaskProps> = ({
   const [progress, setProgress] = useState<Task["progress"]>("Đúng tiến độ");
   const [error, setError] = useState("");
 
+  // Đồng bộ dữ liệu khi mở modal hoặc chỉnh sửa nhiệm vụ
   useEffect(() => {
     if (open && editingTask) {
       setTaskName(editingTask.taskName);
@@ -50,6 +51,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditTaskProps> = ({
     }
   }, [open, editingTask]);
 
+  // Xử lý lưu nhiệm vụ mới hoặc cập nhật nhiệm vụ
   const handleSave = () => {
     // Kiểm tra các trường bắt buộc
     if (!taskName.trim()) {
@@ -96,6 +98,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditTaskProps> = ({
     }
   };
 
+  // Xử lý hủy modal và reset lỗi
   const handleCancel = () => {
     setError("");
     if (onCancel) onCancel();
