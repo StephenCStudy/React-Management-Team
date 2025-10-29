@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Table, Button, message, ConfigProvider, Input } from "antd";
+import { Table, Button, ConfigProvider, Input, message } from "antd";
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import "./ManagermentDetail.scss";
@@ -12,13 +12,11 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../apis/store/hooks";
 import {
   fetchProjectDetails,
-  addTask,
-  updateTask,
-  deleteTask,
   sortByDueDate,
   sortByPriority,
 } from "../../../apis/store/slice/projects/managerDetail.slice";
-import dayjs from "dayjs";
+import { useProjectMembers } from "../../../hooks/useProjectMembers";
+import { useTaskHandlers } from "../../../hooks/useTaskHandlers";
 
 const { Search } = Input;
 
@@ -54,9 +52,6 @@ const ManagermentDetail: React.FC = () => {
   const [usersMap, setUsersMap] = useState<Record<string, string>>({}); // Map userId -> userName để hiển thị tên người dùng
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState<any[]>([]); // Danh sách tất cả người dùng trong hệ thống
-
-  // Logic validation đã được chuyển vào modal InitMemberModal
-  // Modal sẽ tự kiểm tra: email tồn tại, member trùng, và Project Owner duy nhất
 
   // Gọi API để lấy dữ liệu dự án khi component được tải
   useEffect(() => {
@@ -230,8 +225,10 @@ const ManagermentDetail: React.FC = () => {
     },
   ];
 
+  // Tạo dataSource cho bảng với các nhóm trạng thái có thể đóng/mở
   const dataSource = useMemo(() => {
     return Object.entries(grouped).flatMap(([status, items]) => {
+      // flatMap để tạo mảng phẳng từ các nhóm, entries trả về mảng [key, value]
       const header = {
         key: `header-${status}`,
         categoryHeader: true,
@@ -254,102 +251,20 @@ const ManagermentDetail: React.FC = () => {
     });
   }, [grouped, expandedStatuses]);
 
-  // Kiểm tra tính hợp lệ của nhiệm vụ
-  const validateTask = (
-    taskData: Task
-  ): { isValid: boolean; error?: string } => {
-    // Kiểm tra dữ liệu không được trống
-    if (!taskData.taskName?.trim()) {
-      return { isValid: false, error: "Tên nhiệm vụ không được để trống" };
-    }
-
-    // Kiểm tra độ dài tên nhiệm vụ (từ 5 đến 100 ký tự)
-    if (taskData.taskName.length < 5 || taskData.taskName.length > 100) {
-      return { isValid: false, error: "Tên nhiệm vụ phải từ 5 đến 100 ký tự" };
-    }
-
-    // Kiểm tra tên nhiệm vụ có bị trùng không
-    const isDuplicateName = tasks.some(
-      (task) =>
-        task.taskName.toLowerCase() === taskData.taskName.toLowerCase() &&
-        task.id !== taskData.id
-    );
-    if (isDuplicateName) {
-      return { isValid: false, error: "Tên nhiệm vụ đã tồn tại trong dự án" };
-    }
-
-    // Kiểm tra ngày bắt đầu phải lớn hơn ngày hiện tại
-    const today = dayjs().startOf("day");
-    const assignDate = dayjs(taskData.assignDate);
-    if (assignDate.isBefore(today)) {
-      return {
-        isValid: false,
-        error: "Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại",
-      };
-    }
-
-    // Kiểm tra hạn chót phải lớn hơn ngày bắt đầu
-    const dueDate = dayjs(taskData.dueDate);
-    if (dueDate.isBefore(assignDate)) {
-      return { isValid: false, error: "Hạn chót phải lớn hơn ngày bắt đầu" };
-    }
-
-    return { isValid: true };
-  };
-
-  // Xử lý lưu task (thêm mới hoặc cập nhật)
-  async function handleSaveTask(data: Task) {
-    try {
-      // Kiểm tra tính hợp lệ của dữ liệu
-      const validation = validateTask(data);
-      if (!validation.isValid) {
-        message.error(validation.error);
-        return;
-      }
-
-      if (editingTask) {
-        // Cập nhật task
-        await dispatch(
-          updateTask({
-            ...editingTask,
-            ...data,
-            assigneeId: String(data.assigneeId),
-            projectId: String(id),
-          })
-        ).unwrap();
-        message.success("Đã cập nhật nhiệm vụ thành công!");
-      } else {
-        // Thêm task mới
-        await dispatch(
-          addTask({
-            ...data,
-            assigneeId: String(data.assigneeId),
-            projectId: String(id),
-          })
-        ).unwrap();
-        message.success("Đã thêm nhiệm vụ mới thành công!");
-      }
-      setOpenCreateEdit(false);
-      setEditingTask(null);
-    } catch (error) {
-      message.error("Có lỗi xảy ra khi lưu nhiệm vụ!");
-      console.error("Lỗi:", error);
-    }
-  }
-
-  // Xử lý xóa task
-  async function handleConfirmDelete() {
-    if (!taskToDelete) return;
-
-    try {
-      await dispatch(deleteTask(taskToDelete.id)).unwrap();
-      message.success("Đã xóa nhiệm vụ thành công!");
-      setOpenDelete(false);
-      setTaskToDelete(null);
-    } catch (error) {
-      message.error("Có lỗi xảy ra khi xóa nhiệm vụ!");
-    }
-  }
+  // Sử dụng custom hook cho logic Task
+  const { handleSaveTask, handleConfirmDelete } = useTaskHandlers(
+    tasks,
+    editingTask,
+    id,
+    dispatch
+  );
+  // Sử dụng custom hook cho logic member
+  const { addMember, updateMemberRole, deleteMember } = useProjectMembers(
+    project,
+    id,
+    allUsers,
+    dispatch
+  );
 
   return (
     <ConfigProvider getPopupContainer={() => document.body}>
@@ -468,7 +383,9 @@ const ManagermentDetail: React.FC = () => {
             setOpenCreateEdit(false);
             setEditingTask(null);
           }}
-          onOk={handleSaveTask}
+          onOk={(data) =>
+            handleSaveTask(data, setOpenCreateEdit, setEditingTask)
+          }
           editingTask={editingTask}
           projectMembers={projectMembers.map((member) => ({
             userId: member.userId,
@@ -476,167 +393,25 @@ const ManagermentDetail: React.FC = () => {
           }))}
         />
 
-        {/* // Modal xác nhận xóa nhiệm vụ */}
         <ModalDelete
           open={openDelete}
           onCancel={() => setOpenDelete(false)}
-          onConfirm={handleConfirmDelete}
+          onConfirm={() =>
+            handleConfirmDelete(taskToDelete, setOpenDelete, setTaskToDelete)
+          }
         />
 
-        {/* // Modal thêm thành viên ban đầu */}
         <InitMemberModal
           isOpen={openInitMember}
-          onClose={() => {
-            setOpenInitMember(false);
-          }}
-          onSave={async (values, form) => {
-            // Validation đã được thực hiện trong modal
-            // Chỉ cần xử lý logic thêm thành viên vào dự án
-            try {
-              // Tìm user dựa trên email
-              const user = allUsers.find((u) => u.email === values.email);
-              if (!user) {
-                message.error("Không tìm thấy người dùng với email này");
-                return false;
-              }
-
-              // Thêm thành viên vào dự án
-              const newMember = {
-                userId: user.id,
-                role: values.role,
-              };
-
-              // Cập nhật project
-              const response = await fetch(
-                `http://localhost:3000/projects/${id}`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    members: [...(project?.members || []), newMember],
-                  }),
-                }
-              );
-
-              if (response.ok) {
-                message.success("Đã thêm thành viên mới thành công!");
-                // Cập nhật lại dữ liệu dự án
-                dispatch(fetchProjectDetails(id!));
-                // Reset form
-                form.resetFields();
-                return true;
-              } else {
-                throw new Error("Lỗi khi thêm thành viên");
-              }
-            } catch (error) {
-              console.error("Lỗi khi thêm thành viên:", error);
-              message.error("Có lỗi xảy ra khi thêm thành viên");
-              return false;
-            }
-          }}
+          onClose={() => setOpenInitMember(false)}
+          onSave={addMember}
         />
 
-        {/* // Modal xem và quản lý thành viên */}
         <ViewMemberModal
           isOpen={openViewMember}
           onClose={() => setOpenViewMember(false)}
-          onSave={async (updatedMember) => {
-            try {
-              // Kiểm tra xem có phải owner duy nhất không
-              if (updatedMember.role !== "Project Owner") {
-                const ownerCount =
-                  project?.members?.filter(
-                    (m) =>
-                      m.role === "Project Owner" &&
-                      m.userId !== updatedMember.userId
-                  ).length || 0;
-                if (ownerCount === 0) {
-                  message.error(
-                    "Không thể thay đổi vai trò: phải có ít nhất một owner trong dự án!"
-                  );
-                  return;
-                }
-              }
-
-              // Cập nhật vai trò thành viên trong dự án
-              const updatedMembers = project?.members?.map((m) =>
-                m.userId === updatedMember.userId
-                  ? { ...m, role: updatedMember.role }
-                  : m
-              );
-
-              const response = await fetch(
-                `http://localhost:3000/projects/${id}`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    members: updatedMembers,
-                  }),
-                }
-              );
-
-              if (response.ok) {
-                message.success("Đã cập nhật vai trò thành viên thành công!");
-                dispatch(fetchProjectDetails(id!));
-                setOpenViewMember(false);
-              } else {
-                throw new Error("Lỗi khi cập nhật vai trò thành viên");
-              }
-            } catch (error) {
-              console.error("Lỗi khi cập nhật vai trò thành viên:", error);
-              message.error("Có lỗi khi cập nhật vai trò thành viên!");
-            }
-          }}
-          onDelete={async (memberId) => {
-            try {
-              // Kiểm tra xem có phải owner duy nhất không
-              const member = project?.members?.find(
-                (m) => m.userId === memberId
-              );
-              if (member?.role === "Project Owner") {
-                const ownerCount =
-                  project?.members?.filter((m) => m.role === "Project Owner")
-                    .length || 0;
-                if (ownerCount <= 1) {
-                  message.error("Không thể xóa owner duy nhất của dự án!");
-                  return;
-                }
-              }
-
-              // Xóa thành viên khỏi dự án
-              const updatedMembers = project?.members?.filter(
-                (m) => m.userId !== memberId
-              );
-
-              const response = await fetch(
-                `http://localhost:3000/projects/${id}`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    members: updatedMembers,
-                  }),
-                }
-              );
-
-              if (response.ok) {
-                message.success("Đã xóa thành viên khỏi dự án thành công!");
-                dispatch(fetchProjectDetails(id!));
-              } else {
-                throw new Error("Lỗi khi xóa thành viên");
-              }
-            } catch (error) {
-              console.error("Lỗi khi xóa thành viên:", error);
-              message.error("Có lỗi khi xóa thành viên!");
-            }
-          }}
+          onSave={updateMemberRole}
+          onDelete={deleteMember}
           members={projectMembers}
         />
       </div>

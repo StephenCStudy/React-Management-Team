@@ -1,29 +1,54 @@
-// src/components/UserProject.tsx
-import { useEffect, useState } from "react";
+// src/pages/Manager/UserProject/UserProject.tsx
+// Mục tiêu: Hiển thị nhiệm vụ cá nhân theo từng dự án, hỗ trợ tìm kiếm, sắp xếp và cập nhật trạng thái.
+// Yêu cầu bổ sung: Làm lại logic sắp xếp và chuyển tất cả phần chú thích sang tiếng Việt.
+import { useEffect, useMemo, useState } from "react";
 import { ConfigProvider, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
-import "./userProject.scss";
-import type {
-  ProjectMember,
-  TaskUser,
-} from "../../../interfaces/manager/userProject/userProject";
+import "./UserProject.scss";
+import type { TaskUser } from "../../../interfaces/manager/userProject/userProject";
+import ModalUpdate from "./Modal/UpdateProgress/update";
+import { useAppSelector } from "../../../apis/store/hooks";
 
 interface Project {
-  id: number;
+  id: string;
   projectName: string;
   image: string;
-  members: ProjectMember[];
+  members: Array<{ userId: string; role: string }>;
 }
 
 export default function UserProject() {
-  const [openCategories, setOpenCategories] = useState<string[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [taskData, setTaskData] = useState<TaskUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Trạng thái điều khiển UI chung
+  const [openCategories, setOpenCategories] = useState<string[]>([]); // Danh sách nhóm (theo dự án) đang mở/đóng
+  const [projects, setProjects] = useState<Project[]>([]); // Dữ liệu dự án
+  const [taskData, setTaskData] = useState<TaskUser[]>([]); // Dữ liệu nhiệm vụ thô từ API
+  const [loading, setLoading] = useState(true); // Cờ trạng thái tải dữ liệu
+  const [error, setError] = useState<string | null>(null); // Lỗi khi tải dữ liệu
 
-  // Fetch dữ liệu từ API khi component được mount
+  // Trạng thái sắp xếp và tìm kiếm (bỏ lựa chọn tăng/giảm, dùng thứ tự cố định)
+  type SortKey = "none" | "dueDate" | "priority";
+  const [sortKey, setSortKey] = useState<SortKey>("none"); // Trường sắp xếp
+  const [search, setSearch] = useState(""); // Chuỗi tìm kiếm theo tên nhiệm vụ
+
+  // Trạng thái Modal xác nhận cập nhật trạng thái
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskUser | null>(null);
+
+  // Lấy người dùng hiện tại từ Redux (fallback localStorage nếu cần)
+  const authUser = useAppSelector((s) => s.auth.user);
+  const currentUserId: string | null = useMemo(() => {
+    if (authUser?.id) return String(authUser.id);
+    try {
+      const local = localStorage.getItem("user");
+      if (!local) return null;
+      const parsed = JSON.parse(local);
+      return parsed?.id ? String(parsed.id) : null;
+    } catch {
+      return null;
+    }
+  }, [authUser]);
+
+  // Gọi API để lấy danh sách dự án và nhiệm vụ khi component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,8 +58,9 @@ export default function UserProject() {
           fetch("http://localhost:3000/taskData"),
         ]);
 
-        if (!projectsRes.ok || !tasksRes.ok) {  // .ok kiểm tra phản hồi thành công
-          throw new Error("Failed to fetch data");
+        if (!projectsRes.ok || !tasksRes.ok) {
+          // .ok kiểm tra phản hồi thành công
+          throw new Error("Không thể tải dữ liệu");
         }
 
         const projectsData = await projectsRes.json();
@@ -43,7 +69,9 @@ export default function UserProject() {
         setProjects(projectsData);
         setTaskData(tasksData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        setError(
+          err instanceof Error ? err.message : "Đã xảy ra lỗi không xác định"
+        );
       } finally {
         setLoading(false);
       }
@@ -52,6 +80,7 @@ export default function UserProject() {
     fetchData();
   }, []);
 
+  // Đóng/mở nhóm theo tên dự án
   const toggleCategory = (category: string) => {
     setOpenCategories((prev) =>
       prev.includes(category)
@@ -60,19 +89,84 @@ export default function UserProject() {
     );
   };
 
-  // Gộp nhiệm vụ theo dự án
-  const groupedData: Record<string, TaskUser[]> = taskData.reduce(
-    (acc, task) => {
-      const projectName =
-        projects.find((p) => p.id === task.projectId)?.projectName || "Khác";
-      if (!acc[projectName]) acc[projectName] = [];
-      acc[projectName].push(task);
-      return acc;
-    },
-    {} as Record<string, TaskUser[]>
-  );
+  // Bảng trọng số cho mức độ ưu tiên (phục vụ sắp xếp theo ưu tiên)
+  const priorityWeight: Record<string, number> = {
+    Cao: 3,
+    "Trung bình": 2,
+    Thấp: 1,
+  };
 
-  // Cấu hình cột bảng
+  // Lọc nhiệm vụ theo người dùng hiện tại và từ khóa tìm kiếm
+  const personalTasks = useMemo(() => {
+    let list = taskData;
+    if (currentUserId) {
+      list = list.filter((t) => String(t.assigneeId) === String(currentUserId));
+    }
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter((t) => t.taskName.toLowerCase().includes(q));
+    }
+    // Không sắp xếp tại đây để giữ ổn định; sắp xếp được áp dụng trong từng nhóm theo dự án ở bước sau
+    return list;
+  }, [taskData, currentUserId, search]);
+
+  // Gom nhóm nhiệm vụ theo tên dự án và áp dụng sắp xếp mới (thứ tự cố định + tie-breaker rõ ràng)
+  const groupedData: Record<string, TaskUser[]> = useMemo(() => {
+    // 1) Gom nhóm theo tên dự án
+    const groups: Record<string, TaskUser[]> = {};
+    for (const task of personalTasks) {
+      const pid = task.projectId == null ? null : String(task.projectId);
+      const projectName =
+        projects.find((p) => String(p.id) === String(pid))?.projectName ||
+        "Khác";
+      if (!groups[projectName]) groups[projectName] = [];
+      groups[projectName].push(task);
+    }
+
+    // 2) Hàm so sánh nhiệm vụ theo tiêu chí sắp xếp
+    const cmp = (a: TaskUser, b: TaskUser) => {
+      // So sánh theo hạn chót
+      if (sortKey === "dueDate") {
+        const da = new Date(a.dueDate).getTime();
+        const db = new Date(b.dueDate).getTime();
+        // Cố định: hạn chót sớm trước
+        if (da !== db) return da - db;
+        // Tie-breaker 1: ưu tiên (Cao > Trung bình > Thấp)
+        const wa = priorityWeight[a.priority] ?? 0;
+        const wb = priorityWeight[b.priority] ?? 0;
+        if (wa !== wb) return wb - wa; // ưu tiên luôn sắp xếp từ cao xuống thấp khi tie
+        // Tie-breaker 2: tên nhiệm vụ (A-Z)
+        return a.taskName.localeCompare(b.taskName, "vi");
+      }
+
+      // So sánh theo độ ưu tiên
+      if (sortKey === "priority") {
+        const wa = priorityWeight[a.priority] ?? 0;
+        const wb = priorityWeight[b.priority] ?? 0;
+        // Cố định: ưu tiên cao trước (Cao > Trung bình > Thấp)
+        if (wa !== wb) return wb - wa;
+        // Tie-breaker 1: hạn chót (sớm trước)
+        const da = new Date(a.dueDate).getTime();
+        const db = new Date(b.dueDate).getTime();
+        if (da !== db) return da - db;
+        // Tie-breaker 2: tên nhiệm vụ (A-Z)
+        return a.taskName.localeCompare(b.taskName, "vi");
+      }
+
+      // sortKey === "none": giữ nguyên thứ tự hiện có (không can thiệp)
+      return 0;
+    };
+
+    // 3) Áp dụng sắp xếp trong từng nhóm
+    for (const key of Object.keys(groups)) {
+      if (sortKey === "none") continue;
+      groups[key] = [...groups[key]].sort(cmp);
+    }
+
+    return groups;
+  }, [personalTasks, projects, sortKey]);
+
+  // Cấu hình cột bảng hiển thị nhiệm vụ
   const columns: ColumnsType<any> = [
     {
       title: "Tên Nhiệm Vụ",
@@ -100,19 +194,39 @@ export default function UserProject() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status, record) =>
-        !record.categoryHeader ? (
+      render: (status, record) => {
+        if (record.categoryHeader) return null;
+        // Quy ước: "To do" coi như "Pending" để cho phép chuyển đổi với "In progress"
+        const normalized = status === "To do" ? "Pending" : status;
+        const canToggle =
+          normalized === "In progress" || normalized === "Pending";
+        const onClick = () => {
+          if (!canToggle) return;
+          setSelectedTask(record);
+          setIsModalOpen(true);
+        };
+        return (
           <span
-            className={`Allstatus ${status?.toLowerCase().replace(/\s+/g, "-")}`} // replace: Thay thế khoảng trắng bằng dấu gạch ngang
-            style={{ color: "black" }}
+            onClick={onClick}
+            className={`Allstatus ${normalized
+              ?.toLowerCase()
+              .replace(/\s+/g, "-")}`}
+            style={{
+              color: "black",
+              cursor: canToggle ? "pointer" : "default",
+            }}
+            title={canToggle ? "Cập nhật trạng thái" : undefined}
           >
-            <i
-              className="fa-solid fa-pen-to-square"
-              style={{ marginRight: 6, cursor: "pointer" }}
-            ></i>
-            {status}
+            {canToggle && (
+              <i
+                className="fa-solid fa-pen-to-square"
+                style={{ marginRight: 6 }}
+              ></i>
+            )}
+            {normalized}
           </span>
-        ) : null,
+        );
+      },
     },
     {
       title: "Ngày Bắt Đầu",
@@ -156,30 +270,71 @@ export default function UserProject() {
     // },
   ];
 
-  // Sinh hàng nhóm theo trạng thái
-  const expandedData = Object.entries(groupedData).flatMap(
-    ([status, tasks]) => {
-      const isOpen = openCategories.includes(status);
-      const headerRow: any = {
-        key: `cat-${status}`,
-        categoryHeader: true,
-        projectName: (
-          <div
-            onClick={() => toggleCategory(status)}
-            style={{
-              fontWeight: 600,
-              cursor: "pointer",
-              background: "#fafafa",
-              padding: "8px 12px",
-            }}
-          >
-            {isOpen ? <DownOutlined /> : <RightOutlined />} {status}
-          </div>
-        ),
-      };
-      return [headerRow, ...(isOpen ? tasks : [])];
-    }
+  // Sinh dữ liệu hiển thị gồm hàng tiêu đề nhóm (tên dự án) và các hàng nhiệm vụ con
+  const expandedData = useMemo(
+    () =>
+      Object.entries(groupedData)
+        // Sắp xếp tên dự án A-Z để hiển thị nhất quán
+        .sort(([a], [b]) => a.localeCompare(b, "vi"))
+        .flatMap(([projectName, tasks]) => {
+          const isOpen = openCategories.includes(projectName);
+          const headerRow: any = {
+            key: `cat-${projectName}`,
+            categoryHeader: true,
+            projectName: (
+              <div
+                onClick={() => toggleCategory(projectName)}
+                style={{
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: "#fafafa",
+                  padding: "8px 12px",
+                }}
+              >
+                {isOpen ? <DownOutlined /> : <RightOutlined />} {projectName}
+              </div>
+            ),
+          };
+          return [headerRow, ...(isOpen ? tasks : [])];
+        }),
+    [groupedData, openCategories]
   );
+
+  // Xử lý sự kiện của Modal cập nhật trạng thái
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedTask) return;
+    const current =
+      selectedTask.status === "To do" ? "Pending" : selectedTask.status;
+    const nextStatus = current === "In progress" ? "Pending" : "In progress";
+    try {
+      // Gọi API cập nhật trạng thái trên máy chủ giả (json-server)
+      const res = await fetch(
+        `http://localhost:3000/taskData/${selectedTask.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: nextStatus }),
+        }
+      );
+      if (!res.ok) throw new Error("Cập nhật trạng thái thất bại");
+
+      // Cập nhật lại dữ liệu trên client để hiển thị ngay
+      setTaskData((prev) =>
+        prev.map((t) =>
+          t.id === selectedTask.id ? { ...t, status: nextStatus } : t
+        )
+      );
+      handleCancel();
+    } catch (e) {
+      console.error(e);
+      handleCancel();
+    }
+  };
 
   return (
     <ConfigProvider getPopupContainer={() => document.body}>
@@ -189,12 +344,28 @@ export default function UserProject() {
         </div>
 
         <div className="tool-setting">
-          <div className="member" style={{ marginLeft: "1000px" }}>
-            <div className="member-tools">
-              <select>
-                <option value="">Sắp xếp theo</option>
+          <div className="member" style={{ marginLeft: "auto" }}>
+            <div className="member-tools" style={{ display: "flex", gap: 12 }}>
+              {/* Bộ chọn trường sắp xếp */}
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+                style={{ padding: "6px 8px" }}
+                aria-label="Chọn tiêu chí sắp xếp"
+              >
+                <option value="none">Sắp xếp: Mặc định</option>
+                <option value="dueDate">Sắp xếp theo hạn chót</option>
+                <option value="priority">Sắp xếp theo độ ưu tiên</option>
               </select>
-              <input type="text" placeholder="Tìm kiếm nhiệm vụ" />
+
+              {/* Ô tìm kiếm theo tên nhiệm vụ */}
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Tìm kiếm nhiệm vụ"
+                style={{ padding: "6px 10px", minWidth: 240 }}
+              />
             </div>
           </div>
         </div>
@@ -217,6 +388,11 @@ export default function UserProject() {
           />
         </div>
       </div>
+      <ModalUpdate
+        open={isModalOpen}
+        onCancel={handleCancel}
+        onConfirm={handleConfirm}
+      />
     </ConfigProvider>
   );
 }

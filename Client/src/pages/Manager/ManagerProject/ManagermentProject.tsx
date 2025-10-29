@@ -103,10 +103,13 @@ export default function ManagermentProject() {
           <Button
             className="btn-edit"
             onClick={() => {
-              const fullProject =
-                projects.find((p: any) => p.id == record.id) || record;
-              setSelectedProject(fullProject);
-              setOpenModal(true);
+              const fullProject = projects.find(
+                (p: any) => p.id.toString() === record.id.toString()
+              );
+              if (fullProject) {
+                setSelectedProject(fullProject);
+                setOpenModal(true);
+              }
             }}
           >
             Sửa
@@ -204,6 +207,7 @@ export default function ManagermentProject() {
 
           {/* // Modals cho tạo/sửa dự án và xóa dự án */}
           <ModalCreateEdit
+            key={selectedProject ? `edit-${selectedProject.id}` : "create"}
             open={openModal}
             onCancel={() => {
               setOpenModal(false);

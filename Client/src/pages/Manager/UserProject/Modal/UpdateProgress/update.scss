@@ -1,0 +1,114 @@
+.modal-delete {
+  // vỏ modal của antd
+  .ant-modal-content {
+    background: transparent;  // dùng card tùy biến bên trong
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+}
+
+/* Card tuỳ biến đúng 480 x ~230 */
+.md-card {
+  width: 480px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0px 8px 8px rgba(16,24,40,0.03),
+    0px 20px 24px rgba(16,24,40,0.08);
+}
+
+/* Header = 63px, có border-bottom */
+.md-header {
+  height: 63px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.md-title {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  font-size: 16px;
+  line-height: 30px;      /* như Figma */
+  font-weight: 500;
+  color: #212529;
+}
+
+/* nút close ở header */
+.md-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  color: rgba(33,37,41,0.8);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color .15s ease, color .15s ease;
+
+  &:hover { background: #f1f3f5; color: #212529; }
+}
+
+/* Content = 85px, có border-bottom */
+.md-content {
+  height: 85px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+
+  p {
+    margin: 0;
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    color: #101828; /* Gray/900 trong Figma */
+  }
+}
+
+/* Footer/Actions = 63px */
+.md-actions {
+  height: 63px;
+  padding: 14px 24px;     /* cho nút đứng giữa theo chiều dọc */
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #fff;       /* theo ảnh: footer trắng, không nền xám */
+}
+
+.btn-cancel,
+.btn-delete {
+  padding: 6px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all .2s ease;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
+
+.btn-cancel {
+  background: #e9ecef;
+  color: #495057;
+
+  &:hover { background: #dee2e6; }
+  &:active { background: #d6d8db; }
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: #fff;
+
+  &:hover { background: #bb2d3b; }
+  &:active { background: #a71d2a; }
+}

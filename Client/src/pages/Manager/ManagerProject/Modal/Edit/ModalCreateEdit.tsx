@@ -28,41 +28,38 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
 
-  // Set initial form values when modal opens. Use project.projectName if present,
-  // fall back to project.name (table row) for compatibility.
+  // Khi modal mở hoặc project thay đổi, thiết lập giá trị form ban đầu.
+  // Sử dụng project.projectName nếu có,
   useEffect(() => {
-    if (open) {
-      if (project) {
-        console.log("Setting form values for project:", project);
-        form.setFieldsValue({
-          projectName: project.projectName ?? project.name ?? "",
-          description: project.description ?? "",
-        });
-        if (project.image) {
-          setFileList([
-            {
-              uid: "-1",
-              name: "project-image.png",
-              status: "done",
-              url: project.image,
-            },
-          ]);
-        } else {
-          setFileList([]);
-        }
+    if (open && project) {
+      // console.log("Setting form values for project:", project);
+      form.setFieldsValue({
+        projectName: project.projectName ?? project.name ?? "",
+        description: project.description ?? "",
+      });
+
+      if (project.image) {
+        setFileList([
+          {
+            uid: "-1",
+            name: "project-image.png",
+            status: "done",
+            url: project.image,
+          },
+        ]);
       } else {
-        form.resetFields();
         setFileList([]);
       }
-    } else {
-      // when modal is closed, clear form to avoid stale values
+    } else if (open && !project) {
+      // Tạo mới - reset form
       form.resetFields();
       setFileList([]);
     }
-  }, [project, form, open]);
+  }, [open, project, form]);
 
   const { beforeUpload, uploadFile } = useFileUpload();
 
+  // Xử lý lưu dự án khi người dùng nhấn nút Lưu
   const handleSave = async (values: any) => {
     try {
       // Handle image upload if there's a new image
@@ -100,6 +97,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
     }
   };
 
+  // Xử lý khi người dùng hủy modal
   const handleCancel = () => {
     form.resetFields();
     setError("");
@@ -119,7 +117,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
       footer={null}
       onCancel={handleCancel}
       className="modal-create-edit"
-      // keep children mounted to avoid form remount timing issues
+      // giữ nguyên children để tránh các vấn đề về thời gian mount lại form
     >
       <Form
         form={form}
