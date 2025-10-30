@@ -21,10 +21,17 @@ Hệ thống quản lý dự án và công việc nhóm (Team Management System)
 
 ## 🎯 Giới thiệu
 
-**Team Management System** là một ứng dụng quản lý dự án toàn diện được xây dựng với React 19, TypeScript và Redux Toolkit. Ứng dụng hỗ trợ 2 vai trò chính:
+**Team Management System** là một ứng dụng quản lý dự án toàn diện được xây dựng với React 19, TypeScript và Redux Toolkit. Ứng dụng hỗ trợ phân quyền dựa trên **vai trò trong từng dự án**:
 
-- **Admin**: Quản lý toàn bộ dự án, CRUD dự án, quản lý thành viên dự án, quản lý nhiệm vụ (tasks) với đầy đủ chức năng sắp xếp, tìm kiếm và phân nhóm theo trạng thái
-- **Member**: Xem danh sách dự án được tham gia, xem và cập nhật tiến độ các nhiệm vụ được giao
+- **Project Owner**: Người tạo hoặc sở hữu dự án, có toàn quyền quản lý dự án đó (CRUD dự án, thêm/xóa thành viên, quản lý nhiệm vụ)
+- **Member**: Thành viên tham gia dự án, có thể xem chi tiết dự án và cập nhật tiến độ nhiệm vụ được giao
+
+**Đặc điểm nổi bật:**
+
+- ✅ Phân quyền linh hoạt theo từng dự án (một user có thể là Owner của dự án A và Member của dự án B)
+- ✅ Tự động thêm người tạo làm Project Owner khi tạo dự án mới
+- ✅ Chỉ Project Owner mới có quyền chỉnh sửa và xóa dự án
+- ✅ Mọi thành viên (Owner & Member) đều có thể xem chi tiết dự án
 
 Hệ thống sử dụng **JSON Server** làm backend giả lập để demo và phát triển nhanh, với cấu trúc dữ liệu phù hợp cho việc mở rộng sang REST API thực tế.
 
@@ -34,45 +41,53 @@ Hệ thống sử dụng **JSON Server** làm backend giả lập để demo và
 
 ### 🔐 Xác thực & Phân quyền
 
-- ✅ Đăng ký tài khoản mới với xác thực email
+- ✅ Đăng ký tài khoản mới với validation email
 - ✅ Đăng nhập với email/password
-- ✅ Phân quyền rõ ràng: Admin/Member
+- ✅ Phân quyền linh hoạt theo từng dự án (Project Owner / Member)
 - ✅ Protected Routes với ProtectedRoute component
 - ✅ Tự động khôi phục session khi F5 (localStorage + Redux persist)
 - ✅ Context API quản lý message toàn cục
+- ✅ Kiểm tra quyền truy cập dựa trên role trong project
 
-### 📊 Quản lý dự án (Admin)
+### 📊 Quản lý dự án (Project Owner)
 
-- ✅ Xem danh sách tất cả dự án với giao diện Table
-- ✅ Thêm dự án mới (tên, hình ảnh)
-- ✅ Sửa thông tin dự án
-- ✅ Xóa dự án với xác nhận
+- ✅ Xem danh sách các dự án mà mình là Project Owner
+- ✅ Tạo dự án mới (tự động trở thành Project Owner)
+- ✅ Sửa thông tin dự án (chỉ Project Owner)
+- ✅ Xóa dự án với xác nhận (chỉ Project Owner)
 - ✅ Tìm kiếm dự án theo tên (real-time search)
 - ✅ Phân trang danh sách dự án (có thể tuỳ chỉnh pageSize)
 - ✅ Upload hình ảnh dự án với custom hook `useFileUpload`
+- ✅ Xem tất cả dự án mà mình tham gia (Owner & Member)
 
-### 👥 Quản lý thành viên & nhiệm vụ (Admin)
+### 👥 Quản lý chi tiết dự án (Project Owner & Member)
+
+**Quyền xem (Owner & Member):**
 
 - ✅ Xem chi tiết dự án với danh sách thành viên
-- ✅ Thêm thành viên vào dự án từ danh sách người dùng
-- ✅ Xóa thành viên khỏi dự án
-- ✅ Xem thông tin chi tiết thành viên (avatar, tên, role)
-- ✅ Quản lý nhiệm vụ (CRUD tasks)
-- ✅ Nhóm nhiệm vụ theo trạng thái (To do, In Progress, Done)
+- ✅ Xem thông tin thành viên (avatar, tên, role)
+- ✅ Xem danh sách nhiệm vụ nhóm theo trạng thái (To do, In Progress, Done, Pending)
+- ✅ Tìm kiếm nhiệm vụ theo tên hoặc người phụ trách
 - ✅ Sắp xếp nhiệm vụ theo: Ngày hết hạn, Độ ưu tiên
-- ✅ Tìm kiếm nhiệm vụ theo tên
+
+**Quyền quản lý (chỉ Project Owner):**
+
+- ✅ Thêm/Xóa thành viên vào dự án
+- ✅ Cập nhật role của thành viên (Project Owner / Member)
+- ✅ Tạo/Sửa/Xóa nhiệm vụ (CRUD tasks)
 - ✅ Gán nhiệm vụ cho thành viên dự án
-- ✅ Đặt độ ưu tiên (Low, Medium, High)
+- ✅ Đặt độ ưu tiên cho nhiệm vụ (Cao, Trung bình, Thấp)
+- ✅ Đặt tiến độ và trạng thái nhiệm vụ
 
-### 📋 Quản lý công việc (Member)
+### 📋 Quản lý nhiệm vụ cá nhân (Tất cả user)
 
-- ✅ Xem danh sách dự án được tham gia
-- ✅ Xem nhiệm vụ được giao trong từng dự án
+- ✅ Xem tất cả nhiệm vụ được giao cho mình
 - ✅ Nhóm nhiệm vụ theo dự án với expand/collapse
-- ✅ Cập nhật tiến độ nhiệm vụ (0-100%)
+- ✅ Cập nhật trạng thái nhiệm vụ (Pending ↔ In progress)
+- ✅ Xem tiến độ nhiệm vụ (Đúng tiến độ, Có rủi ro, Trễ hạn)
 - ✅ Sắp xếp nhiệm vụ theo: Ngày hết hạn, Độ ưu tiên
 - ✅ Tìm kiếm nhiệm vụ theo tên
-- ✅ Xem thông tin chi tiết: Mô tả, người giao, ngày hết hạn, độ ưu tiên
+- ✅ Xem thông tin chi tiết: Ưu tiên, ngày bắt đầu, hạn chót, tiến độ
 
 ### 📱 Trải nghiệm người dùng
 
@@ -431,25 +446,27 @@ curl -X PATCH http://localhost:3000/taskData/1 \
 
 ## 👤 Tài khoản demo
 
-### Admin Accounts
+### Tài khoản có sẵn
 
-Tài khoản Admin có quyền quản lý toàn bộ dự án, thành viên và nhiệm vụ:
+Hệ thống có sẵn một số tài khoản để test với các vai trò khác nhau trong từng dự án:
 
-| Email              | Password | Họ tên         | Quyền truy cập                         |
-| ------------------ | -------- | -------------- | -------------------------------------- |
-| admin1@example.com | admin123 | Nguyễn Văn An  | ✅ Quản lý dự án, thành viên, nhiệm vụ |
-| admin2@example.com | admin123 | Trần Thị Bình  | ✅ Quản lý dự án, thành viên, nhiệm vụ |
-| admin3@example.com | admin123 | Lê Hoàng Cường | ✅ Quản lý dự án, thành viên, nhiệm vụ |
+| Email                        | Password  | Họ tên         | Vai trò trong dự án                                         |
+| ---------------------------- | --------- | -------------- | ----------------------------------------------------------- |
+| admin1@example.com           | admin123  | Nguyễn Văn An  | **Project Owner** của 5 dự án (ID: 1, 4, 7, 10, 13, 16, 19) |
+| admin2@example.com           | admin123  | Trần Thị Bình  | **Project Owner** của 5 dự án (ID: 2, 5, 8, 11, 14, 17, 20) |
+| admin3@example.com           | admin123  | Lê Hoàng Cường | **Project Owner** của 5 dự án (ID: 3, 6, 9, 12, 15, 18)     |
+| user1@example.com            | user123   | Phạm Minh Đức  | **Member** của nhiều dự án                                  |
+| user2@example.com            | user123   | Hoàng Thị Em   | **Member** của nhiều dự án                                  |
+| user3@example.com            | user123   | Đỗ Văn Phong   | **Member** của nhiều dự án                                  |
+| tranducanh31032006@gmail.com | 123456789 | Trần Đức Anh   | **Project Owner** của 1 dự án, **Member** của 3 dự án       |
 
-### Member Accounts
+### Phân quyền theo dự án
 
-Tài khoản Member chỉ có thể xem dự án được tham gia và cập nhật tiến độ nhiệm vụ của mình:
+**Lưu ý quan trọng:** Quyền của user phụ thuộc vào **role trong từng dự án**, không phải role chung của tài khoản:
 
-| Email             | Password | Họ tên        | Quyền truy cập                          |
-| ----------------- | -------- | ------------- | --------------------------------------- |
-| user1@example.com | user123  | Phạm Minh Đức | 👁️ Xem dự án, cập nhật tiến độ nhiệm vụ |
-| user2@example.com | user123  | Hoàng Thị Em  | 👁️ Xem dự án, cập nhật tiến độ nhiệm vụ |
-| user3@example.com | user123  | Đỗ Văn Phong  | 👁️ Xem dự án, cập nhật tiến độ nhiệm vụ |
+- **Project Owner trong dự án A**: Có toàn quyền quản lý dự án A (CRUD project, members, tasks)
+- **Member trong dự án B**: Chỉ xem được dự án B và cập nhật nhiệm vụ được giao
+- **Một user có thể vừa là Owner của dự án này, vừa là Member của dự án khác**
 
 ### Hướng dẫn đăng nhập
 
@@ -457,11 +474,21 @@ Tài khoản Member chỉ có thể xem dự án được tham gia và cập nh�
 2. Chọn một tài khoản từ bảng trên
 3. Nhập email và password
 4. Click "Đăng nhập"
-5. Hệ thống sẽ tự động redirect về trang tương ứng với role:
-   - **Admin** → `/Manager/Project` (Quản lý dự án)
-   - **Member** → `/Manager/User` (Danh sách dự án của tôi)
+5. Sau khi đăng nhập, bạn sẽ thấy:
+   - **Trang "Dự Án"**: Danh sách các dự án mà bạn là **Project Owner**
+   - **Trang "Nhiệm vụ của tôi"**: Danh sách nhiệm vụ được giao cho bạn
 
-> **💡 Tips**: Bạn có thể đăng ký tài khoản mới tại trang `/Register` và tự động trở thành Member
+### Tạo tài khoản mới
+
+- Truy cập trang `/register` để tạo tài khoản mới
+- Tài khoản mới có thể tạo dự án và tự động trở thành **Project Owner** của dự án đó
+- Project Owner có thể thêm users khác vào dự án với role Member
+
+> **💡 Tips**:
+>
+> - Đăng nhập với `admin1@example.com` để thấy nhiều dự án nhất
+> - Đăng nhập với `user1@example.com` để trải nghiệm vai trò Member
+> - Tạo tài khoản mới để test tính năng đăng ký và tạo dự án từ đầu
 
 ---
 
@@ -489,22 +516,36 @@ Xem danh sách dự án được tham gia và cập nhật tiến độ nhiệm 
 
 ## 🎯 Workflow cơ bản
 
-### Admin Workflow
+### Project Owner Workflow
 
-1. **Đăng nhập** với tài khoản Admin
-2. **Tạo dự án mới** tại trang "Quản lý dự án"
-3. **Click vào dự án** để xem chi tiết
+1. **Đăng nhập** với tài khoản (ví dụ: admin1@example.com)
+2. **Tạo dự án mới** tại trang "Quản lý dự án" → tự động trở thành Project Owner
+3. **Click "Chi tiết"** để vào trang quản lý dự án
 4. **Thêm thành viên** vào dự án từ danh sách users
-5. **Tạo nhiệm vụ** và gán cho thành viên
-6. **Theo dõi tiến độ** các nhiệm vụ theo trạng thái
+5. **Phân công vai trò** cho thành viên (Project Owner / Member)
+6. **Tạo nhiệm vụ** và gán cho thành viên
+7. **Theo dõi tiến độ** các nhiệm vụ theo trạng thái (To do, In Progress, Done)
+8. **Sắp xếp/Tìm kiếm** nhiệm vụ theo nhu cầu
 
 ### Member Workflow
 
-1. **Đăng nhập** với tài khoản Member
-2. **Xem danh sách dự án** mình tham gia
-3. **Mở rộng dự án** để xem các nhiệm vụ được giao
-4. **Cập nhật tiến độ** nhiệm vụ (0-100%)
-5. **Xem chi tiết** nhiệm vụ: mô tả, deadline, độ ưu tiên
+1. **Đăng nhập** với tài khoản Member (ví dụ: user1@example.com)
+2. **Xem dự án** mình tham gia (nếu được thêm vào bởi Project Owner)
+   - Vào trang "Dự Án" → Không thấy dự án (vì không phải Owner)
+   - Click "Chi tiết" từ link trực tiếp hoặc thông báo → Có thể xem chi tiết
+3. **Xem danh sách nhiệm vụ** được giao tại trang "Nhiệm vụ của tôi"
+4. **Cập nhật trạng thái** nhiệm vụ (Pending ↔ In progress)
+5. **Xem chi tiết** nhiệm vụ: ưu tiên, deadline, tiến độ
+
+### Quy trình tạo và quản lý dự án hoàn chỉnh
+
+1. **User A** tạo dự án mới → A tự động là **Project Owner**
+2. **User A** thêm **User B** vào dự án với role **Member**
+3. **User A** tạo nhiệm vụ và gán cho **User B**
+4. **User B** vào "Nhiệm vụ của tôi" → thấy nhiệm vụ được giao
+5. **User B** cập nhật trạng thái nhiệm vụ từ Pending → In progress
+6. **User A** theo dõi tiến độ tại trang chi tiết dự án
+7. **User B** có thể xem chi tiết dự án (nhưng không sửa/xóa được)
 
 ---
 
@@ -547,22 +588,64 @@ Xem danh sách dự án được tham gia và cập nhật tiến độ nhiệm 
 
 ### Hạn chế hiện tại ⚠️
 
-1. **Image upload**: Hiện chỉ lưu URL, chưa có backend upload thực sự (có thể mở rộng với multer hoặc cloud storage)
+1. **Image upload**: Hiện chỉ lưu URL/blob, chưa có backend upload thực sự (có thể mở rộng với multer hoặc cloud storage)
 2. **Authentication**: Sử dụng simple authentication, chưa có JWT token với expiry
 3. **Real-time updates**: Chưa có WebSocket, cần reload để thấy thay đổi từ user khác
 4. **Validation**: Validation form cơ bản, có thể mở rộng với Yup hoặc Zod
 5. **Pagination API**: Chưa implement server-side pagination (đang dùng client-side)
+6. **Role Management UI**: Project Owner không thể thay đổi role của chính mình trong project
+7. **Notification**: Chưa có hệ thống thông báo real-time khi được thêm vào dự án hoặc được gán task
 
 ### Roadmap 🚀
 
+**Authentication & Security:**
+
 - [ ] Implement JWT authentication với refresh token
-- [ ] Thêm WebSocket cho real-time updates
+- [ ] Password hashing với bcrypt
+- [ ] Rate limiting cho API endpoints
+- [ ] CORS configuration cho production
+
+**Real-time Features:**
+
+- [ ] WebSocket cho real-time updates (Socket.io)
+- [ ] Notification system khi được thêm vào project/task
+- [ ] Live collaboration trên task board
+
+**File & Media:**
+
 - [ ] Upload file với backend thực (Express + Multer)
+- [ ] Image optimization và compression
+- [ ] Cloud storage integration (AWS S3 / Cloudinary)
+
+**Performance & Scalability:**
+
 - [ ] Server-side pagination, filtering, sorting
-- [ ] Unit tests với Vitest
+- [ ] Caching với Redis
+- [ ] Database migration sang PostgreSQL/MongoDB
+- [ ] API versioning
+
+**Testing & Quality:**
+
+- [ ] Unit tests với Vitest (components, hooks, utils)
+- [ ] Integration tests cho Redux slices
 - [ ] E2E tests với Playwright
-- [ ] Docker containerization
-- [ ] CI/CD pipeline
+- [ ] Code coverage reports
+
+**DevOps:**
+
+- [ ] Docker containerization (Client + Server)
+- [ ] Docker Compose cho development
+- [ ] CI/CD pipeline (GitHub Actions)
+- [ ] Environment variables management
+- [ ] Production deployment guide (Vercel/Netlify + Railway/Render)
+
+**UI/UX Improvements:**
+
+- [ ] Dark mode support
+- [ ] Drag & drop cho task board (Kanban style)
+- [ ] Advanced filters cho tasks và projects
+- [ ] Export data (PDF, Excel)
+- [ ] Multilingual support (i18n)
 
 ---
 
