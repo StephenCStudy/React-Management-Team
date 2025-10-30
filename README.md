@@ -146,7 +146,7 @@ Hệ thống sử dụng **JSON Server** làm backend giả lập để demo và
 ### Bước 1: Clone repository
 
 ```bash
-git clone <repository-url>
+git clone <git remote set-url origin git@github.com:StephenCStudy/React-Management-Team.git>
 cd teammanagerment_task5
 ```
 
@@ -658,8 +658,9 @@ Dự án này được phát hành dưới license **MIT License**.
 ## 👨‍💻 Tác giả
 
 **Team Development**  
-📧 Email: [Your Email]  
-🔗 Repository: [Git Repository URL]
+📧 Email: [tranducah31032006@gmail.com]  
+🔗 Repository: [git remote set-url origin git@github.com:StephenCStudy/React-Management-Team.git
+]
 
 ---
 
