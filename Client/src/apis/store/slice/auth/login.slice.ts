@@ -8,7 +8,7 @@ import type { LoginDTO } from "../../../../interfaces/auth/Login/formDataLogin";
 interface AuthState {
   loading: boolean;
   error: string | null;
-  user: any; // thông tin người dùng (tùy API trả về)
+  user: any; // thông tin người dùng đăng nhập
   token: string | null; // token đăng nhập
 }
 

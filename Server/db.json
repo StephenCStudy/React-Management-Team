@@ -4,88 +4,67 @@
       "id": "1",
       "fullName": "Nguyễn Văn An",
       "email": "admin1@example.com",
-      "password": "admin123",
-      "isAdmin": true,
-      "role": "admin"
+      "password": "admin123"
     },
     {
       "id": "2",
       "fullName": "Trần Thị Bình",
       "email": "admin2@example.com",
-      "password": "admin123",
-      "isAdmin": true,
-      "role": "admin"
+      "password": "admin123"
     },
     {
       "id": "3",
       "fullName": "Lê Hoàng Cường",
       "email": "admin3@example.com",
-      "password": "admin123",
-      "isAdmin": true,
-      "role": "admin"
+      "password": "admin123"
     },
     {
       "id": "4",
       "fullName": "Phạm Minh Đức",
       "email": "user1@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "5",
       "fullName": "Hoàng Thị Em",
       "email": "user2@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "6",
       "fullName": "Đỗ Văn Phong",
       "email": "user3@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "7",
       "fullName": "Vũ Thị Giang",
       "email": "user4@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "8",
       "fullName": "Bùi Văn Hải",
       "email": "user5@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "9",
       "fullName": "Đinh Thị Lan",
       "email": "user6@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "10",
       "fullName": "Trương Văn Khoa",
       "email": "user7@example.com",
-      "password": "user123",
-      "isAdmin": false,
-      "role": "member"
+      "password": "user123"
     },
     {
       "id": "fe79",
       "displayName": "Trần Đức Anh",
       "email": "tranducanh31032006@gmail.com",
-      "password": "123456789",
-      "isAdmin": false
+      "password": "123456789"
     }
   ],
   "projects": [
@@ -538,6 +517,18 @@
       "projectName": "1",
       "description": "123123",
       "image": "blob:http://localhost:5173/fc64cf44-c3da-4bcb-ac24-760ba6a5a0a1",
+      "members": [
+        {
+          "userId": "fe79",
+          "role": "Project Owner"
+        }
+      ]
+    },
+    {
+      "id": "7138",
+      "projectName": "Xây dựng website thương mại điện tử",
+      "description": "13222222222222",
+      "image": "blob:http://localhost:5173/8186c470-8bb7-4818-8c79-e512efbdf601",
       "members": [
         {
           "userId": "fe79",

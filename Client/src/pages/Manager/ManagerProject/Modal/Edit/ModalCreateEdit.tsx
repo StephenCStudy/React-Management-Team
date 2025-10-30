@@ -82,13 +82,19 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
           })
         );
       } else {
-        // Create new project
+        // Create new project - lấy user hiện tại từ localStorage để set làm Project Owner
+        const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
         await dispatch(
           addProject({
             projectName: values.projectName, // Đảm bảo tên field là projectName khi gửi lên server
             description: values.description,
             image: imagePath || "/default-project-image.png",
-            members: [],
+            members: [
+              {
+                userId: currentUser.id,
+                role: "Project Owner",
+              },
+            ],
           })
         );
       }

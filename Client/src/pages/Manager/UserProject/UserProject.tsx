@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { ConfigProvider, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -9,7 +8,6 @@ import ModalUpdate from "./Modal/UpdateProgress/update";
 import { useAppSelector } from "../../../apis/store/hooks";
 import { useMessageApi } from "../../../contexts/MessageContext";
 
-const messageApi = useMessageApi();
 interface Project {
   id: string;
   projectName: string;
@@ -18,6 +16,9 @@ interface Project {
 }
 
 export default function UserProject() {
+  // Hook phải được gọi bên trong component function
+  const messageApi = useMessageApi();
+
   // Trạng thái điều khiển UI chung
   const [openCategories, setOpenCategories] = useState<string[]>([]); // Danh sách nhóm (theo dự án) đang mở/đóng
   const [projects, setProjects] = useState<Project[]>([]); // Dữ liệu dự án
@@ -25,9 +26,8 @@ export default function UserProject() {
   const [loading, setLoading] = useState(true); // Cờ trạng thái tải dữ liệu
   const [error, setError] = useState<string | null>(null); // Lỗi khi tải dữ liệu
 
-
   //---------------------------------------------
-  // Trạng thái sắp xếp và tìm kiếm 
+  // Trạng thái sắp xếp và tìm kiếm
   //---------------------------------------------
   type SortKey = "none" | "dueDate" | "priority";
   const [sortKey, setSortKey] = useState<SortKey>("none"); // Trường sắp xếp
@@ -127,7 +127,6 @@ export default function UserProject() {
   // Gom nhóm nhiệm vụ theo tên dự án và áp dụng sắp xếp mới (thứ tự cố định + tie-breaker rõ ràng)
   //---------------------------------------------
   const groupedData: Record<string, TaskUser[]> = useMemo(() => {
-
     // 1) --------- Gom nhóm theo tên dự án ---------
     const groups: Record<string, TaskUser[]> = {};
     for (const task of personalTasks) {

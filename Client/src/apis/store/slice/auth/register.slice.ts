@@ -19,7 +19,6 @@ export const registerUser = createAsyncThunk(
       // Nếu email chưa có → tạo user mới
       const newUser = await axios.post(`http://localhost:3000/users`, {
         ...data,
-        isAdmin: false, // mặc định user thường
       });
 
       MessageService.getMessageApi().success("Đăng ký thành công"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19

@@ -35,6 +35,9 @@ const ManagermentDetail: React.FC = () => {
   // Lấy messageApi từ context
   const messageApi = useMessageApi(); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 
+  // Lấy user hiện tại từ Redux store
+  const currentUser = useAppSelector((state) => state.auth.user);
+
   // Lấy state từ Redux store thông qua useSelector
   const { project, tasks } = useAppSelector((state) => state.managerDetail); // dùng state từ managerDetail slice để lấy dữ liệu dự án và nhiệm vụ
 
@@ -88,7 +91,7 @@ const ManagermentDetail: React.FC = () => {
     }
   };
 
-  // Tính toán danh sách thành viên với thông tin đầy đủ, dùng để hiển thị trong bảng thành viên 
+  // Tính toán danh sách thành viên với thông tin đầy đủ, dùng để hiển thị trong bảng thành viên
   const projectMembers = useMemo(() => {
     // Nếu không có thông tin dự án hoặc thành viên, trả về mảng rỗng
     if (!project?.members) return [];
@@ -105,12 +108,12 @@ const ManagermentDetail: React.FC = () => {
     }));
   }, [project, usersMap]); // Tính toán lại khi project hoặc usersMap thay đổi
 
-
   // ------------------------------------------------------------------------------
   // Lọc và sắp xếp danh sách nhiệm vụ dựa trên từ khóa tìm kiếm và sortKey
   // ------------------------------------------------------------------------------
   const visibleTasks = useMemo(() => {
-    let filtered = tasks.filter((task: Task) => { // tìm kiếm nhiệm vụ
+    let filtered = tasks.filter((task: Task) => {
+      // tìm kiếm nhiệm vụ
       const q = search.trim().toLowerCase(); // dùng trim() để loại bỏ khoảng trắng thừa, dùng toLowerCase() để không phân biệt hoa thường
       if (!q) return true; // Nếu không có từ khóa tìm kiếm, giữ lại tất cả
       const assignee = usersMap[String(task.assigneeId)] || ""; // Lấy assigneeId từ usersMap
@@ -120,7 +123,8 @@ const ManagermentDetail: React.FC = () => {
       );
     });
     // Sắp xếp nếu có sortKey
-    if (sortKey === "dueDate") { // sắp xếp theo hạn chót
+    if (sortKey === "dueDate") {
+      // sắp xếp theo hạn chót
       filtered = [...filtered].sort((a, b) => {
         const da = new Date(a.dueDate).getTime(); // Lấy thời gian hạn chót của nhiệm vụ a
         const db = new Date(b.dueDate).getTime(); // Lấy thời gian hạn chót của nhiệm vụ b
@@ -132,7 +136,8 @@ const ManagermentDetail: React.FC = () => {
         if (wa !== wb) return wb - wa; // Ưu tiên cao hơn đứng trước
         return a.taskName.localeCompare(b.taskName, "vi"); // Cuối cùng sắp xếp theo tên nhiệm vụ, dùng localeCompare với locale "vi" để đúng thứ tự tiếng Việt
       });
-    } else if (sortKey === "priority") { // sắp xếp theo ưu tiên
+    } else if (sortKey === "priority") {
+      // sắp xếp theo ưu tiên
       const priorityOrder = { Cao: 3, "Trung bình": 2, Thấp: 1 };
       filtered = [...filtered].sort((a, b) => {
         const wa = priorityOrder[a.priority] ?? 0;
@@ -152,7 +157,8 @@ const ManagermentDetail: React.FC = () => {
   // Nhóm các nhiệm vụ theo trạng thái
   // ------------------------------------------------------------------------------
   const grouped = useMemo(() => {
-    return visibleTasks.reduce((acc: Record<string, Task[]>, task: Task) => { // dùng reduce để nhóm các nhiệm vụ theo trạng thái
+    return visibleTasks.reduce((acc: Record<string, Task[]>, task: Task) => {
+      // dùng reduce để nhóm các nhiệm vụ theo trạng thái
       const status = task.status || "To do"; // Nếu không có trạng thái, mặc định là "To do"
       if (!acc[status]) acc[status] = [];
       acc[status].push(task); // Thêm nhiệm vụ vào nhóm tương ứng
@@ -267,8 +273,9 @@ const ManagermentDetail: React.FC = () => {
       const header = {
         key: `header-${status}`, // header là khóa duy nhất cho mỗi nhóm
         categoryHeader: true,
+        // icon chỉ trạng thái đóng/mở
         taskName: (
-          <div     // dùng để hiển thị tiêu đề nhóm có thể đóng/mở
+          <div // dùng để hiển thị tiêu đề nhóm có thể đóng/mở
             onClick={() => toggleStatus(status)}
             style={{
               fontWeight: "bold",
@@ -277,9 +284,9 @@ const ManagermentDetail: React.FC = () => {
               padding: "8px 12px",
             }}
           >
-            {expandedStatuses[status] ? <DownOutlined /> : <RightOutlined />}{" "}  
+            {expandedStatuses[status] ? <DownOutlined /> : <RightOutlined />}{" "}
             {status}
-          </div> // icon chỉ trạng thái đóng/mở
+          </div>
         ),
       };
       return [header, ...(expandedStatuses[status] ? items : [])]; // Nếu nhóm đang mở, thêm các nhiệm vụ vào, nếu đóng thì chỉ có header
@@ -302,6 +309,38 @@ const ManagermentDetail: React.FC = () => {
     dispatch, // hàm dispatch từ Redux store
     messageApi // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
   );
+
+  // Kiểm tra xem user hiện tại có phải là thành viên của dự án này không (bất kể role)
+  const isMember = useMemo(() => {
+    if (!project || !currentUser) return false;
+    return project.members?.some(
+      (member) => member.userId.toString() === currentUser.id?.toString()
+    );
+  }, [project, currentUser]);
+
+  // Nếu không phải thành viên của project, hiển thị thông báo
+  if (project && !isMember) {
+    return (
+      <div
+        style={{
+          padding: "20px",
+          textAlign: "center",
+          fontSize: "24px",
+          color: "black",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <p>Bạn không có quyền truy cập dự án này.</p>
+        <p style={{ fontSize: "16px", marginTop: "10px", color: "#666" }}>
+          Chỉ thành viên của dự án mới có thể xem chi tiết.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <ConfigProvider getPopupContainer={() => document.body}>

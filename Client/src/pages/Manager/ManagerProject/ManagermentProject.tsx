@@ -57,11 +57,21 @@ export default function ManagermentProject() {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  // Lọc dự án dựa trên từ khóa tìm kiếm
-  const filteredProjects = projects.filter(
-    (project: Project) =>
-      project.projectName.toLowerCase().includes(searchText.toLowerCase()) // không phân biệt hoa thường
-  );
+  // Lọc dự án mà user hiện tại là Project Owner và khớp với từ khóa tìm kiếm
+  const filteredProjects = projects.filter((project: Project) => {
+    // Kiểm tra user có phải Project Owner của dự án này không
+    const isProjectOwner = project.members?.some(
+      (member) =>
+        member.userId.toString() === user?.id?.toString() &&
+        member.role === "Project Owner"
+    );
+
+    // Chỉ hiển thị project nếu user là Project Owner VÀ tên project khớp với tìm kiếm
+    return (
+      isProjectOwner &&
+      project.projectName.toLowerCase().includes(searchText.toLowerCase())
+    );
+  });
 
   // Chuyển đổi dữ liệu dự án thành định dạng phù hợp cho bảng dự án
   const dataSource: ProjectTableItem[] = filteredProjects.map(
@@ -73,7 +83,7 @@ export default function ManagermentProject() {
     })
   );
 
-  // Định nghĩa các cột cho bảng dự án
+  // Định nghĩa các cột cho bảng dự án (Project Owner - có đầy đủ quyền)
   const columns: ColumnType<ProjectTableItem>[] = [
     // {
     //   title: "STT",
@@ -155,99 +165,81 @@ export default function ManagermentProject() {
 
   return (
     <div className="Manager-container">
-      {user.isAdmin ? (
-        <>
-          <h1 className="Manager-title">Quản lý dự án nhóm</h1>
+      <h1 className="Manager-title">Quản lý dự án nhóm</h1>
 
-          <div className="Manager-setting">
-            {/* // Nút thêm dự án mới và thanh tìm kiếm */}
-            <Button
-              className="Manager-create"
-              onClick={() => {
-                setSelectedProject(null);
-                setOpenModal(true);
-              }}
-            >
-              + Thêm dự án
-            </Button>
-            {/* // Thanh tìm kiếm */}
-            <Form form={form} className="search-form">
-              <Form.Item name="search" style={{ marginBottom: 0 }}>
-                <Search
-                  placeholder="Tìm kiếm..."
-                  onChange={(e) => setSearchText(e.target.value)}
-                  onSearch={(value: string) =>
-                    form.setFieldsValue({ search: value })
-                  }
-                  allowClear
-                />
-              </Form.Item>
-            </Form>
-          </div>
-
-          {/* // Bảng danh sách dự án */}
-          <p className="title-table">Danh Sách Dự Án</p>
-          <Table
-            loading={isLoading}
-            dataSource={dataSource}
-            columns={columns}
-            pagination={{
-              current: currentPage,
-              pageSize: pageSize,
-              total: dataSource.length,
-              pageSizeOptions: ["5", "7", "10"],
-              showSizeChanger: true,
-              onChange: (page, size) => {
-                setCurrentPage(page);
-                setPageSize(size);
-              },
-            }}
-            bordered
-          />
-
-          {/* // Modals cho tạo/sửa dự án và xóa dự án */}
-          <ModalCreateEdit
-            key={selectedProject ? `edit-${selectedProject.id}` : "create"}
-            open={openModal}
-            onCancel={() => {
-              setOpenModal(false);
-              setSelectedProject(null);
-            }}
-            onOk={() => {
-              setOpenModal(false);
-              setSelectedProject(null);
-            }}
-            project={selectedProject}
-          />
-
-          {/* // Modal xác nhận xóa dự án */}
-          <ModalDelete
-            open={openDelete}
-            onCancel={() => {
-              setOpenDelete(false);
-              setSelectedProject(null);
-            }}
-            onDelete={handleDelete}
-          />
-        </>
-      ) : (
-        // Hiển thị thông báo không có quyền truy cập nếu không phải admin
-        <div
-          style={{
-            padding: "20px",
-            textAlign: "center",
-            fontSize: "32px",
-            color: "black",
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+      <div className="Manager-setting">
+        {/* // Nút thêm dự án mới và thanh tìm kiếm */}
+        <Button
+          className="Manager-create"
+          onClick={() => {
+            setSelectedProject(null);
+            setOpenModal(true);
           }}
         >
-          Bạn không có quyền truy cập do bạn là
-          <b>{user.isAdmin ? " admin" : " member"}</b>
-        </div>
-      )}
+          + Thêm dự án
+        </Button>
+        {/* // Thanh tìm kiếm */}
+        <Form form={form} className="search-form">
+          <Form.Item name="search" style={{ marginBottom: 0 }}>
+            <Search
+              placeholder="Tìm kiếm..."
+              onChange={(e) => setSearchText(e.target.value)}
+              onSearch={(value: string) =>
+                form.setFieldsValue({ search: value })
+              }
+              allowClear
+            />
+          </Form.Item>
+        </Form>
+      </div>
+
+      {/* // Bảng danh sách dự án của tôi */}
+      <p className="title-table">Danh Sách Dự Án </p>
+      <Table
+        loading={isLoading}
+        dataSource={dataSource}
+        columns={columns}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: dataSource.length,
+          pageSizeOptions: ["5", "7", "10"],
+          showSizeChanger: true,
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
+        }}
+        bordered
+        locale={{
+          emptyText: "Bạn chưa là Project Owner của dự án nào",
+        }}
+      />
+
+      {/* // Modals cho tạo/sửa dự án và xóa dự án */}
+      <ModalCreateEdit
+        key={selectedProject ? `edit-${selectedProject.id}` : "create"}
+        open={openModal}
+        onCancel={() => {
+          setOpenModal(false);
+          setSelectedProject(null);
+        }}
+        onOk={() => {
+          setOpenModal(false);
+          setSelectedProject(null);
+        }}
+        project={selectedProject}
+      />
+
+      {/* // Modal xác nhận xóa dự án */}
+      <ModalDelete
+        open={openDelete}
+        onCancel={() => {
+          setOpenDelete(false);
+          setSelectedProject(null);
+        }}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }
