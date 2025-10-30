@@ -1,21 +1,21 @@
-import { message } from "antd";
-import dayjs from "dayjs";
+import type { MessageInstance } from "antd/es/message/interface"; // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
+import dayjs from "dayjs"; // thư viện xử lý date nhẹ hơn momentjs 
 import {
   addTask,
   updateTask,
   deleteTask,
-} from "../apis/store/slice/projects/managerDetail.slice";
+} from "../apis/store/slice/projects/managerDetail.slice"; 
 
 //--------------------------------------------------------------
 // custom hook cho quản lý nhiệm vụ dự án Management Detail
 //--------------------------------------------------------------
 
-
 export function useTaskHandlers(
   tasks: any[],
   editingTask: any,
   id: string | undefined,
-  dispatch: any
+  dispatch: any,
+  messageApi: MessageInstance // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 ) {
   // Validate task
   const validateTask = (
@@ -59,7 +59,7 @@ export function useTaskHandlers(
     try {
       const validation = validateTask(data);
       if (!validation.isValid) {
-        message.error(validation.error);
+        messageApi.error(validation.error); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
         return;
       }
       if (editingTask) {
@@ -71,7 +71,7 @@ export function useTaskHandlers(
             projectId: String(id),
           })
         ).unwrap();
-        message.success("Đã cập nhật nhiệm vụ thành công!");
+        messageApi.success("Đã cập nhật nhiệm vụ thành công!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       } else {
         await dispatch(
           addTask({
@@ -80,12 +80,12 @@ export function useTaskHandlers(
             projectId: String(id),
           })
         ).unwrap();
-        message.success("Đã thêm nhiệm vụ mới thành công!");
+        messageApi.success("Đã thêm nhiệm vụ mới thành công!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       }
       setOpenCreateEdit(false);
       setEditingTask(null);
     } catch (error) {
-      message.error("Có lỗi xảy ra khi lưu nhiệm vụ!");
+      messageApi.error("Có lỗi xảy ra khi lưu nhiệm vụ!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
     }
   };
 
@@ -98,11 +98,11 @@ export function useTaskHandlers(
     if (!taskToDelete) return;
     try {
       await dispatch(deleteTask(taskToDelete.id)).unwrap();
-      message.success("Đã xóa nhiệm vụ thành công!");
+      messageApi.success("Đã xóa nhiệm vụ thành công!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       setOpenDelete(false);
       setTaskToDelete(null);
     } catch (error) {
-      message.error("Có lỗi xảy ra khi xóa nhiệm vụ!");
+      messageApi.error("Có lỗi xảy ra khi xóa nhiệm vụ!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
     }
   };
 

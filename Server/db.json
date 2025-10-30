@@ -532,6 +532,18 @@
           "role": "Member"
         }
       ]
+    },
+    {
+      "id": "baa5",
+      "projectName": "1",
+      "description": "123123",
+      "image": "blob:http://localhost:5173/fc64cf44-c3da-4bcb-ac24-760ba6a5a0a1",
+      "members": [
+        {
+          "userId": "fe79",
+          "role": "Project Owner"
+        }
+      ]
     }
   ],
   "taskData": [
@@ -745,11 +757,11 @@
       "taskName": "Xây dựng trang quản lý khóa học",
       "assigneeId": "fe79",
       "projectId": "4",
-      "assignDate": "2025-10-29",
-      "dueDate": "2025-10-31",
+      "assignDate": "2025-10-31",
+      "dueDate": "2026-10-24",
       "priority": "Cao",
       "progress": "Đúng tiến độ",
-      "status": "Done"
+      "status": "Pending"
     },
     {
       "id": "19",
@@ -781,23 +793,23 @@
       "taskName": "Thiết kế UI trang học tập",
       "assigneeId": "fe79",
       "projectId": "4",
-      "assignDate": "2025-10-29",
-      "dueDate": "2025-10-31",
-      "priority": "Trung bình",
+      "assignDate": "2025-10-30",
+      "dueDate": "2025-11-08",
+      "priority": "Thấp",
       "progress": "Đúng tiến độ",
-      "status": "To do"
+      "status": "In progress"
     },
     {
       "id": "22",
       "key": "22",
       "taskName": "Xây dựng API quản lý học viên",
-      "assigneeId": "9",
+      "assigneeId": "1",
       "projectId": "4",
-      "assignDate": "2025-10-19",
-      "dueDate": "2025-10-29",
+      "assignDate": "2025-10-31",
+      "dueDate": "2025-11-08",
       "priority": "Cao",
       "progress": "Đúng tiến độ",
-      "status": "Done"
+      "status": "In progress"
     },
     {
       "id": "23",
@@ -1134,6 +1146,18 @@
       "priority": "Cao",
       "progress": "Đúng tiến độ",
       "status": "In progress"
+    },
+    {
+      "id": "9762",
+      "taskName": "6123213",
+      "assigneeId": "fe79",
+      "status": "To do",
+      "assignDate": "2025-10-30",
+      "dueDate": "2025-10-31",
+      "priority": "Cao",
+      "progress": "Có rủi ro",
+      "key": "1761790177972",
+      "projectId": "baa5"
     }
   ]
 }

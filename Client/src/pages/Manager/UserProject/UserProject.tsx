@@ -1,6 +1,4 @@
-// src/pages/Manager/UserProject/UserProject.tsx
-// Mục tiêu: Hiển thị nhiệm vụ cá nhân theo từng dự án, hỗ trợ tìm kiếm, sắp xếp và cập nhật trạng thái.
-// Yêu cầu bổ sung: Làm lại logic sắp xếp và chuyển tất cả phần chú thích sang tiếng Việt.
+
 import { useEffect, useMemo, useState } from "react";
 import { ConfigProvider, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -9,7 +7,9 @@ import "./UserProject.scss";
 import type { TaskUser } from "../../../interfaces/manager/userProject/userProject";
 import ModalUpdate from "./Modal/UpdateProgress/update";
 import { useAppSelector } from "../../../apis/store/hooks";
+import { useMessageApi } from "../../../contexts/MessageContext";
 
+const messageApi = useMessageApi();
 interface Project {
   id: string;
   projectName: string;
@@ -25,16 +25,23 @@ export default function UserProject() {
   const [loading, setLoading] = useState(true); // Cờ trạng thái tải dữ liệu
   const [error, setError] = useState<string | null>(null); // Lỗi khi tải dữ liệu
 
-  // Trạng thái sắp xếp và tìm kiếm (bỏ lựa chọn tăng/giảm, dùng thứ tự cố định)
+
+  //---------------------------------------------
+  // Trạng thái sắp xếp và tìm kiếm 
+  //---------------------------------------------
   type SortKey = "none" | "dueDate" | "priority";
   const [sortKey, setSortKey] = useState<SortKey>("none"); // Trường sắp xếp
   const [search, setSearch] = useState(""); // Chuỗi tìm kiếm theo tên nhiệm vụ
 
+  //---------------------------------------------
   // Trạng thái Modal xác nhận cập nhật trạng thái
+  //---------------------------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskUser | null>(null);
 
+  //---------------------------------------------
   // Lấy người dùng hiện tại từ Redux (fallback localStorage nếu cần)
+  //---------------------------------------------
   const authUser = useAppSelector((s) => s.auth.user);
   const currentUserId: string | null = useMemo(() => {
     if (authUser?.id) return String(authUser.id);
@@ -48,7 +55,9 @@ export default function UserProject() {
     }
   }, [authUser]);
 
+  //---------------------------------------------
   // Gọi API để lấy danh sách dự án và nhiệm vụ khi component mount
+  //---------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -80,7 +89,9 @@ export default function UserProject() {
     fetchData();
   }, []);
 
+  //---------------------------------------------
   // Đóng/mở nhóm theo tên dự án
+  //---------------------------------------------
   const toggleCategory = (category: string) => {
     setOpenCategories((prev) =>
       prev.includes(category)
@@ -96,7 +107,9 @@ export default function UserProject() {
     Thấp: 1,
   };
 
+  //---------------------------------------------
   // Lọc nhiệm vụ theo người dùng hiện tại và từ khóa tìm kiếm
+  //---------------------------------------------
   const personalTasks = useMemo(() => {
     let list = taskData;
     if (currentUserId) {
@@ -110,20 +123,23 @@ export default function UserProject() {
     return list;
   }, [taskData, currentUserId, search]);
 
+  //---------------------------------------------
   // Gom nhóm nhiệm vụ theo tên dự án và áp dụng sắp xếp mới (thứ tự cố định + tie-breaker rõ ràng)
+  //---------------------------------------------
   const groupedData: Record<string, TaskUser[]> = useMemo(() => {
-    // 1) Gom nhóm theo tên dự án
+
+    // 1) --------- Gom nhóm theo tên dự án ---------
     const groups: Record<string, TaskUser[]> = {};
     for (const task of personalTasks) {
       const pid = task.projectId == null ? null : String(task.projectId);
       const projectName =
         projects.find((p) => String(p.id) === String(pid))?.projectName ||
-        "Khác";
+        "Dự án không xác định";
       if (!groups[projectName]) groups[projectName] = [];
       groups[projectName].push(task);
     }
 
-    // 2) Hàm so sánh nhiệm vụ theo tiêu chí sắp xếp
+    // 2) --------- Hàm so sánh nhiệm vụ theo tiêu chí sắp xếp ---------
     const cmp = (a: TaskUser, b: TaskUser) => {
       // So sánh theo hạn chót
       if (sortKey === "dueDate") {
@@ -157,7 +173,7 @@ export default function UserProject() {
       return 0;
     };
 
-    // 3) Áp dụng sắp xếp trong từng nhóm
+    // 3) --------- Áp dụng sắp xếp trong từng nhóm ---------
     for (const key of Object.keys(groups)) {
       if (sortKey === "none") continue;
       groups[key] = [...groups[key]].sort(cmp);
@@ -270,7 +286,9 @@ export default function UserProject() {
     // },
   ];
 
+  //---------------------------------------------
   // Sinh dữ liệu hiển thị gồm hàng tiêu đề nhóm (tên dự án) và các hàng nhiệm vụ con
+  //---------------------------------------------
   const expandedData = useMemo(
     () =>
       Object.entries(groupedData)
@@ -285,7 +303,7 @@ export default function UserProject() {
               <div
                 onClick={() => toggleCategory(projectName)}
                 style={{
-                  fontWeight: 600,
+                  fontWeight: "bold",
                   cursor: "pointer",
                   background: "#fafafa",
                   padding: "8px 12px",
@@ -302,17 +320,20 @@ export default function UserProject() {
 
   // Xử lý sự kiện của Modal cập nhật trạng thái
   const handleCancel = () => {
-    setIsModalOpen(false);
-    setSelectedTask(null);
+    setIsModalOpen(false); // Đóng modal
+    setSelectedTask(null); // Xóa nhiệm vụ đã chọn
   };
 
+  //---------------------------------------------
+  // Xác nhận cập nhật trạng thái nhiệm vụ
+  //---------------------------------------------
   const handleConfirm = async () => {
     if (!selectedTask) return;
     const current =
-      selectedTask.status === "To do" ? "Pending" : selectedTask.status;
+      selectedTask.status === "To do" ? "Pending" : selectedTask.status; // chỉ chỉnh trạng thái theo "Pending" và "In progress"
     const nextStatus = current === "In progress" ? "Pending" : "In progress";
     try {
-      // Gọi API cập nhật trạng thái trên máy chủ giả (json-server)
+      // Gọi API cập nhật trạng thái trên json-server
       const res = await fetch(
         `http://localhost:3000/taskData/${selectedTask.id}`,
         {
@@ -321,7 +342,10 @@ export default function UserProject() {
           body: JSON.stringify({ status: nextStatus }),
         }
       );
-      if (!res.ok) throw new Error("Cập nhật trạng thái thất bại");
+      if (!res.ok) {
+        messageApi.error("Cập nhật trạng thái thất bại");
+        return;
+      }
 
       // Cập nhật lại dữ liệu trên client để hiển thị ngay
       setTaskData((prev) =>
@@ -331,7 +355,7 @@ export default function UserProject() {
       );
       handleCancel();
     } catch (e) {
-      console.error(e);
+      messageApi.error("Có lỗi xảy ra khi cập nhật trạng thái nhiệm vụ"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       handleCancel();
     }
   };

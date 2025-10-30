@@ -1,4 +1,4 @@
-// src/pages/auth/Login/Login.tsx
+
 import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { FormData } from "../../../interfaces/auth/Login/formDataLogin";

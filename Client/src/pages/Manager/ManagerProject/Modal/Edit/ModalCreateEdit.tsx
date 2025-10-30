@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Upload, message } from "antd";
+import { Modal, Form, Input, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import "./ModalCreateEdit.scss";
@@ -9,6 +9,7 @@ import {
   addProject,
   updateProject,
 } from "../../../../../apis/store/slice/projects/projects.slice";
+import { useMessageApi } from "../../../../../contexts/MessageContext";
 
 interface ModalCreateEditProps {
   open: boolean;
@@ -24,6 +25,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
   project,
 }) => {
   const dispatch = useAppDispatch();
+  const messageApi = useMessageApi();
   const [error, setError] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
@@ -57,7 +59,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
     }
   }, [open, project, form]);
 
-  const { beforeUpload, uploadFile } = useFileUpload();
+  const { beforeUpload, uploadFile } = useFileUpload(messageApi);
 
   // Xử lý lưu dự án khi người dùng nhấn nút Lưu
   const handleSave = async (values: any) => {
@@ -162,7 +164,7 @@ const ModalCreateEdit: React.FC<ModalCreateEditProps> = ({
                   await uploadFile(file);
                   onSuccess?.("ok");
                 } catch (error) {
-                  message.error("Upload failed");
+                  messageApi.error("Upload failed");
                 }
               }
             }}

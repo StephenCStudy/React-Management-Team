@@ -1,14 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { message } from "antd";
-
-// Định nghĩa kiểu dữ liệu cho đăng ký
-export interface SignDTO {
-  displayName: string;
-  email: string;
-  password: string;
-}
-
+import MessageService from "../../../../utils/MessageService";
+import type { SignDTO } from "../../../../interfaces/auth/register/fomDataRegis";
 // Hàm gọi API xử lý đăng ký người dùng
 export const registerUser = createAsyncThunk(
   "user/register",
@@ -24,18 +17,15 @@ export const registerUser = createAsyncThunk(
       }
 
       // Nếu email chưa có → tạo user mới
-      const newUser = await axios.post(
-        `http://localhost:3000/users`,
-        {
-          ...data,
-          isAdmin: false, // mặc định user thường
-        }
-      );
+      const newUser = await axios.post(`http://localhost:3000/users`, {
+        ...data,
+        isAdmin: false, // mặc định user thường
+      });
 
-      message.success("Đăng ký thành công");
+      MessageService.getMessageApi().success("Đăng ký thành công"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return newUser.data;
     } catch (error: any) {
-      message.error(error.message || "Đăng ký thất bại");
+      MessageService.getMessageApi().error(error.message || "Đăng ký thất bại"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return rejectWithValue(error.message);
     }
   }

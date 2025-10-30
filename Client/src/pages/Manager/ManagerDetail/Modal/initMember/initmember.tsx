@@ -1,9 +1,10 @@
 // InitMemberModal.tsx
 
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, message } from "antd";
+import { Modal, Form, Input, Select } from "antd";
 import { useParams } from "react-router-dom";
 import "./initmember.scss"; // Import file SCSS
+import { useMessageApi } from "../../../../../contexts/MessageContext"; // sử dụng messageApi từ context
 
 const { Option } = Select;
 
@@ -33,6 +34,7 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
 }) => {
   // Sử dụng Antd Form hook
   const [form] = Form.useForm<AddMemberFormValues>();
+  const messageApi = useMessageApi();
   const [saving, setSaving] = useState(false);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [projectMembers, setProjectMembers] = useState<any[]>([]);
@@ -62,8 +64,7 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
       const projectData = await projectResponse.json();
       setProjectMembers(projectData?.members || []);
     } catch (error) {
-      console.error("Lỗi khi tải dữ liệu:", error);
-      message.error("Không thể tải dữ liệu người dùng và dự án");
+      messageApi.error("Không thể tải dữ liệu người dùng và dự án"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
     }
   };
 
@@ -94,11 +95,11 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
       };
     }
 
-    // 3. Kiểm tra role Project Owner - chỉ được có 1 owner
+    // 3. Kiểm tra role Project Owner - chỉ được có 1 owner khi thêm mới
     if (role === "project-owner") {
-      const hasOwner = projectMembers.some(
+      const hasOwner = projectMembers.some( // some thay cho find để kiểm tra tồn tại vì chỉ cần biết có hay không
         (member) =>
-          member.role === "Project Owner" || member.role === "project-owner"
+          member.role === "Project Owner"
       );
       if (hasOwner) {
         return {
@@ -124,7 +125,7 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
       // Kiểm tra validation tùy chỉnh
       const validation = validateMemberData(values.email, values.role);
       if (!validation.isValid) {
-        message.error(validation.error);
+        messageApi.error(validation.error); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
         setSaving(false);
         return;
       }
@@ -142,7 +143,7 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
       }
     } catch (info) {
       console.error("Validate Failed:", info);
-      message.warning("Vui lòng kiểm tra lại thông tin!");
+      messageApi.warning("Vui lòng kiểm tra lại thông tin!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
     } finally {
       setSaving(false);
     }
@@ -204,9 +205,9 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
           ]}
           extra={
             projectMembers.some(
-              (m) => m.role === "Project Owner" || m.role === "project-owner"
+              (m) => m.role === "Project Owner" 
             )
-              ? "⚠️ Dự án đã có Project Owner"
+              ? "Dự án đã có Project Owner"
               : undefined
           }
         >
@@ -214,12 +215,12 @@ const InitMemberModal: React.FC<InitMemberModalProps> = ({
             <Option
               value="project-owner"
               disabled={projectMembers.some(
-                (m) => m.role === "Project Owner" || m.role === "project-owner"
+                (m) => m.role === "Project Owner" 
               )}
             >
               Project Owner
               {projectMembers.some(
-                (m) => m.role === "Project Owner" || m.role === "project-owner"
+                (m) => m.role === "Project Owner" 
               ) && " (Đã có)"}
             </Option>
             <Option value="member">Member</Option>

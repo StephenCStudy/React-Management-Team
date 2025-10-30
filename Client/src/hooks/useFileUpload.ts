@@ -1,23 +1,23 @@
-import { message } from "antd";
+import type { MessageInstance } from "antd/es/message/interface"; // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 import type { RcFile } from "antd/es/upload";
 
 /**
  * Custom hook để xử lý việc upload file -> trả về URL local để sử dụng làm hình ảnh dự án
  */
-export const useFileUpload = () => {
+export const useFileUpload = (messageApi: MessageInstance) => {
   /**
    * Kiểm tra file trước khi upload
    */
   const beforeUpload = (file: RcFile) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error("Bạn chỉ có thể tải lên file hình ảnh!");
+      messageApi.error("Bạn chỉ có thể tải lên file hình ảnh!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return false;
     }
 
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error("Hình ảnh phải nhỏ hơn 2MB!");
+      messageApi.error("Hình ảnh phải nhỏ hơn 2MB!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return false;
     }
     return true;
@@ -35,7 +35,7 @@ export const useFileUpload = () => {
       return localUrl;
     } catch (error) {
       console.error("Error uploading file:", error);
-      message.error("Không thể tải lên file. Vui lòng thử lại!");
+      messageApi.error("Không thể tải lên file. Vui lòng thử lại!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       throw new Error("Failed to upload file");
     }
   };

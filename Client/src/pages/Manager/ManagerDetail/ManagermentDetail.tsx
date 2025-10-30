@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Table, Button, ConfigProvider, Input, message } from "antd";
+import { Table, Button, ConfigProvider, Input } from "antd";
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import "./ManagermentDetail.scss";
@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../../apis/store/hooks";
 import { fetchProjectDetails } from "../../../apis/store/slice/projects/managerDetail.slice";
 import { useProjectMembers } from "../../../hooks/useProjectMembers";
 import { useTaskHandlers } from "../../../hooks/useTaskHandlers";
+import { useMessageApi } from "../../../contexts/MessageContext"; // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 
 const { Search } = Input;
 
@@ -30,6 +31,9 @@ const ManagermentDetail: React.FC = () => {
 
   // Khởi tạo dispatch để gửi action đến Redux store
   const dispatch = useAppDispatch();
+
+  // Lấy messageApi từ context
+  const messageApi = useMessageApi(); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 
   // Lấy state từ Redux store thông qua useSelector
   const { project, tasks } = useAppSelector((state) => state.managerDetail); // dùng state từ managerDetail slice để lấy dữ liệu dự án và nhiệm vụ
@@ -51,6 +55,7 @@ const ManagermentDetail: React.FC = () => {
   type SortKey = "none" | "dueDate" | "priority";
   const [sortKey, setSortKey] = useState<SortKey>("none");
 
+  // ------------------------------------------------------------------------------
   // Gọi API để lấy dữ liệu dự án khi component được tải
   useEffect(() => {
     // Chỉ gọi API khi có ID dự án
@@ -78,12 +83,12 @@ const ManagermentDetail: React.FC = () => {
       });
       setUsersMap(map);
     } catch (err) {
-      console.error("Lỗi khi tải dữ liệu người dùng:", err);
-      message.error("Không thể tải danh sách người dùng");
+      // console.error("Lỗi khi tải dữ liệu người dùng:", err);
+      messageApi.error("Không thể tải danh sách người dùng"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
     }
   };
 
-  // Tính toán danh sách thành viên với thông tin đầy đủ
+  // Tính toán danh sách thành viên với thông tin đầy đủ, dùng để hiển thị trong bảng thành viên 
   const projectMembers = useMemo(() => {
     // Nếu không có thông tin dự án hoặc thành viên, trả về mảng rỗng
     if (!project?.members) return [];
@@ -100,31 +105,34 @@ const ManagermentDetail: React.FC = () => {
     }));
   }, [project, usersMap]); // Tính toán lại khi project hoặc usersMap thay đổi
 
+
+  // ------------------------------------------------------------------------------
   // Lọc và sắp xếp danh sách nhiệm vụ dựa trên từ khóa tìm kiếm và sortKey
+  // ------------------------------------------------------------------------------
   const visibleTasks = useMemo(() => {
-    let filtered = tasks.filter((task: Task) => {
-      const q = search.trim().toLowerCase();
-      if (!q) return true;
-      const assignee = usersMap[String(task.assigneeId)] || "";
+    let filtered = tasks.filter((task: Task) => { // tìm kiếm nhiệm vụ
+      const q = search.trim().toLowerCase(); // dùng trim() để loại bỏ khoảng trắng thừa, dùng toLowerCase() để không phân biệt hoa thường
+      if (!q) return true; // Nếu không có từ khóa tìm kiếm, giữ lại tất cả
+      const assignee = usersMap[String(task.assigneeId)] || ""; // Lấy assigneeId từ usersMap
       return (
-        String(task.taskName).toLowerCase().includes(q) ||
+        String(task.taskName).toLowerCase().includes(q) || // trả về chuỗi nếu taskName hoặc assignee chứa từ khóa tìm kiếm
         assignee.toLowerCase().includes(q)
       );
     });
     // Sắp xếp nếu có sortKey
-    if (sortKey === "dueDate") {
+    if (sortKey === "dueDate") { // sắp xếp theo hạn chót
       filtered = [...filtered].sort((a, b) => {
-        const da = new Date(a.dueDate).getTime();
-        const db = new Date(b.dueDate).getTime();
-        if (da !== db) return da - db;
+        const da = new Date(a.dueDate).getTime(); // Lấy thời gian hạn chót của nhiệm vụ a
+        const db = new Date(b.dueDate).getTime(); // Lấy thời gian hạn chót của nhiệm vụ b
+        if (da !== db) return da - db; // Sắp xếp tăng dần theo hạn chót
         // Tie-breaker: ưu tiên
         const priorityOrder = { Cao: 3, "Trung bình": 2, Thấp: 1 };
-        const wa = priorityOrder[a.priority] ?? 0;
-        const wb = priorityOrder[b.priority] ?? 0;
-        if (wa !== wb) return wb - wa;
-        return a.taskName.localeCompare(b.taskName, "vi");
+        const wa = priorityOrder[a.priority] ?? 0; // Ưu tiên của nhiệm vụ a
+        const wb = priorityOrder[b.priority] ?? 0; // Ưu tiên của nhiệm vụ b
+        if (wa !== wb) return wb - wa; // Ưu tiên cao hơn đứng trước
+        return a.taskName.localeCompare(b.taskName, "vi"); // Cuối cùng sắp xếp theo tên nhiệm vụ, dùng localeCompare với locale "vi" để đúng thứ tự tiếng Việt
       });
-    } else if (sortKey === "priority") {
+    } else if (sortKey === "priority") { // sắp xếp theo ưu tiên
       const priorityOrder = { Cao: 3, "Trung bình": 2, Thấp: 1 };
       filtered = [...filtered].sort((a, b) => {
         const wa = priorityOrder[a.priority] ?? 0;
@@ -140,9 +148,11 @@ const ManagermentDetail: React.FC = () => {
     return filtered;
   }, [tasks, search, usersMap, sortKey]);
 
+  // ------------------------------------------------------------------------------
   // Nhóm các nhiệm vụ theo trạng thái
+  // ------------------------------------------------------------------------------
   const grouped = useMemo(() => {
-    return visibleTasks.reduce((acc: Record<string, Task[]>, task: Task) => {
+    return visibleTasks.reduce((acc: Record<string, Task[]>, task: Task) => { // dùng reduce để nhóm các nhiệm vụ theo trạng thái
       const status = task.status || "To do"; // Nếu không có trạng thái, mặc định là "To do"
       if (!acc[status]) acc[status] = [];
       acc[status].push(task); // Thêm nhiệm vụ vào nhóm tương ứng
@@ -155,7 +165,9 @@ const ManagermentDetail: React.FC = () => {
     setExpandedStatuses((cur) => ({ ...cur, [s]: !cur[s] }));
   }
 
+  // ------------------------------------------------------------------------------
   // Định nghĩa các cột cho bảng nhiệm vụ
+  // ------------------------------------------------------------------------------
   const columns: ColumnsType<any> = [
     {
       title: "Tên Nhiệm Vụ",
@@ -246,45 +258,49 @@ const ManagermentDetail: React.FC = () => {
     },
   ];
 
+  // ------------------------------------------------------------------------------
   // Tạo dataSource cho bảng với các nhóm trạng thái có thể đóng/mở
+  // ------------------------------------------------------------------------------
   const dataSource = useMemo(() => {
     return Object.entries(grouped).flatMap(([status, items]) => {
       // flatMap để tạo mảng phẳng từ các nhóm, entries trả về mảng [key, value]
       const header = {
-        key: `header-${status}`,
+        key: `header-${status}`, // header là khóa duy nhất cho mỗi nhóm
         categoryHeader: true,
         taskName: (
-          <div
+          <div     // dùng để hiển thị tiêu đề nhóm có thể đóng/mở
             onClick={() => toggleStatus(status)}
             style={{
-              fontWeight: 600,
+              fontWeight: "bold",
               cursor: "pointer",
               background: "#fafafa",
               padding: "8px 12px",
             }}
           >
-            {expandedStatuses[status] ? <DownOutlined /> : <RightOutlined />}{" "}
+            {expandedStatuses[status] ? <DownOutlined /> : <RightOutlined />}{" "}  
             {status}
-          </div>
+          </div> // icon chỉ trạng thái đóng/mở
         ),
       };
-      return [header, ...(expandedStatuses[status] ? items : [])];
+      return [header, ...(expandedStatuses[status] ? items : [])]; // Nếu nhóm đang mở, thêm các nhiệm vụ vào, nếu đóng thì chỉ có header
     });
   }, [grouped, expandedStatuses]);
 
-  // Sử dụng custom hook cho logic Task
+  // Sử dụng custom hook cho logic Task ( thêm, sửa, xóa nhiệm vụ)
   const { handleSaveTask, handleConfirmDelete } = useTaskHandlers(
-    tasks,
-    editingTask,
-    id,
-    dispatch
+    tasks, // danh sách nhiệm vụ
+    editingTask, // nhiệm vụ đang chỉnh sửa
+    id, // ID dự án
+    dispatch, // hàm dispatch từ Redux store
+    messageApi // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
   );
-  // Sử dụng custom hook cho logic member
+  // Sử dụng custom hook cho logic member ( thêm, sửa, xóa thành viên)
   const { addMember, updateMemberRole, deleteMember } = useProjectMembers(
-    project,
-    id,
-    allUsers,
-    dispatch
+    project, // thông tin dự án
+    id, // ID dự án
+    allUsers, // danh sách tất cả người dùng trong hệ thống
+    dispatch, // hàm dispatch từ Redux store
+    messageApi // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
   );
 
   return (

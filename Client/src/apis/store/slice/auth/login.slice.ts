@@ -1,13 +1,8 @@
 // File: src/store/slice/login.slice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { message } from "antd";
-
-// Kiểu dữ liệu cho form đăng nhập
-export interface LoginDTO {
-  email: string;
-  password: string;
-}
+import MessageService from "../../../../utils/MessageService"; // hàm gọi message thay cho import trực tiếp từ antd
+import type { LoginDTO } from "../../../../interfaces/auth/Login/formDataLogin";
 
 // Trạng thái lưu trong Redux store
 interface AuthState {
@@ -55,7 +50,7 @@ export const loginUser = createAsyncThunk(
       // Kiểm tra user tồn tại hay không
       const user = res.data[0];
       if (!user) {
-        throw new Error("Tài khoản không tồn tại");
+        throw new Error("Người dùng không tồn tại");
       }
 
       // Kiểm tra mật khẩu khớp hay không
@@ -63,17 +58,19 @@ export const loginUser = createAsyncThunk(
         throw new Error("Sai mật khẩu");
       }
 
-      // Giả lập token
+      // Giả lập token chỉ để xem có token cho người dùng đăng nhập, không có kiểm tra token từ server hay gới hạn thời gian, mã hóa, ....
       const fakeToken = `${user.isAdmin}_${user.id}_${Date.now()}`;
 
       // Lưu vào localStorage để giữ trạng thái đăng nhập
       localStorage.setItem("token", fakeToken);
       localStorage.setItem("user", JSON.stringify(user));
 
-      message.success("Đăng nhập thành công ");
+      MessageService.getMessageApi().success("Đăng nhập thành công ");
       return { user, token: fakeToken };
     } catch (error: any) {
-      message.error(error.message || "Đăng nhập thất bại");
+      MessageService.getMessageApi().error(
+        error.message || "Đăng nhập thất bại"
+      );  // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return rejectWithValue(error.message);
     }
   }
@@ -90,7 +87,7 @@ const loginSlice = createSlice({
       state.token = null;
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      message.info("Đã đăng xuất");
+      MessageService.getMessageApi().info("Đã đăng xuất"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
     },
     // Action để load lại user từ localStorage (dùng khi cần refresh state)
     loadUserFromStorage: (state) => {

@@ -1,11 +1,10 @@
 // import { useState } from "react";
-import { message } from "antd";
+import type { MessageInstance } from "antd/es/message/interface"; // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 // import { useAppDispatch } from "../apis/store/hooks";
 
 //--------------------------------------------------------------
 // custom hook cho quản lý thành viên dự án Management Detail
 //--------------------------------------------------------------
-
 
 import { fetchProjectDetails } from "../apis/store/slice/projects/managerDetail.slice";
 
@@ -13,14 +12,15 @@ export function useProjectMembers(
   project: any,
   id: string | undefined,
   allUsers: any[],
-  dispatch: any
+  dispatch: any,
+  messageApi: MessageInstance // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
 ) {
   // Thêm thành viên
   const addMember = async (values: any, form: any) => {
     try {
       const user = allUsers.find((u) => u.email === values.email);
       if (!user) {
-        message.error("Không tìm thấy người dùng với email này");
+        messageApi.error("Không tìm thấy người dùng với email này"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
         return false;
       }
       const newMember = { userId: user.id, role: values.role };
@@ -32,7 +32,7 @@ export function useProjectMembers(
         }),
       });
       if (response.ok) {
-        message.success("Đã thêm thành viên mới thành công!");
+        messageApi.success("Đã thêm thành viên mới thành công!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
         dispatch(fetchProjectDetails(id!));
         form.resetFields();
         return true;
@@ -40,7 +40,7 @@ export function useProjectMembers(
         throw new Error("Lỗi khi thêm thành viên");
       }
     } catch (error) {
-      message.error("Có lỗi xảy ra khi thêm thành viên");
+      messageApi.error("Có lỗi xảy ra khi thêm thành viên"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return false;
     }
   };
@@ -55,9 +55,9 @@ export function useProjectMembers(
               m.role === "Project Owner" && m.userId !== updatedMember.userId
           ).length || 0;
         if (ownerCount === 0) {
-          message.error(
+          messageApi.error(
             "Không thể thay đổi vai trò: phải có ít nhất một owner trong dự án!"
-          );
+          ); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
           return;
         }
       }
@@ -72,14 +72,14 @@ export function useProjectMembers(
         body: JSON.stringify({ members: updatedMembers }),
       });
       if (response.ok) {
-        message.success("Đã cập nhật vai trò thành viên thành công!");
+        messageApi.success("Đã cập nhật vai trò thành viên thành công!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
         dispatch(fetchProjectDetails(id!));
         return true;
       } else {
         throw new Error("Lỗi khi cập nhật vai trò thành viên");
       }
     } catch (error) {
-      message.error("Có lỗi khi cập nhật vai trò thành viên!");
+      messageApi.error("Có lỗi khi cập nhật vai trò thành viên!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return false;
     }
   };
@@ -93,7 +93,7 @@ export function useProjectMembers(
           project?.members?.filter((m: any) => m.role === "Project Owner")
             .length || 0;
         if (ownerCount <= 1) {
-          message.error("Không thể xóa owner duy nhất của dự án!");
+          messageApi.error("Không thể xóa owner duy nhất của dự án!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
           return;
         }
       }
@@ -106,14 +106,14 @@ export function useProjectMembers(
         body: JSON.stringify({ members: updatedMembers }),
       });
       if (response.ok) {
-        message.success("Đã xóa thành viên khỏi dự án thành công!");
+        messageApi.success("Đã xóa thành viên khỏi dự án thành công!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
         dispatch(fetchProjectDetails(id!));
         return true;
       } else {
         throw new Error("Lỗi khi xóa thành viên");
       }
     } catch (error) {
-      message.error("Có lỗi khi xóa thành viên!");
+      messageApi.error("Có lỗi khi xóa thành viên!"); // thay cho import message trực tiếp từ antd vì antd v5 không hỗ trợ dùng message trong react 19
       return false;
     }
   };
